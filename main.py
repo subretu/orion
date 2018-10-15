@@ -71,7 +71,7 @@ def message_text(event):
     port = "5432"
     db = "dbrp0st7k5ml0l"        
     con = psycopg2.connect("host=" + server + " port=" + port + " dbname=" + db + " user=" + user + " password=" + pwd)
-    cursor = conn.cursor()
+    cursor = con.cursor()
     cursor.execute("SELECT a1 FROM sample;")
     results = cursor.fetchone()
 
