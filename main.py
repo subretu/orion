@@ -14,6 +14,7 @@
 
 import os
 import sys
+import psycopg2
 from argparse import ArgumentParser
 
 from flask import Flask, request, abort
@@ -63,6 +64,18 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def message_text(event):
+
+    user = "vndjandgjvbilb"
+    pwd = "baa627f8fad9e103962d75b6b282cbac9fa9898188f5f4560fd2fbe138b28859"
+    server = "ec2-107-22-189-136.compute-1.amazonaws.com"
+    port = "5432"
+    db = "dbrp0st7k5ml0l"        
+    con = psycopg2.connect("host=" + server + " port=" + port + " dbname=" + db + " user=" + user + " password=" + pwd)
+    cursor = conn.cursor()
+    cursor.execute("SELECT a1 FROM sample;")
+    results = cursor.fetchone()
+
+
     """
     line_bot_api.reply_message(
         event.reply_token,
@@ -81,7 +94,7 @@ def message_text(event):
 
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text=content)
+        TextSendMessage(text=results)
     )
 
 
