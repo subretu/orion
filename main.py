@@ -83,8 +83,8 @@ def message_text(event):
         TextSendMessage(text="じろ～")
     )
     """
-    if 'おはよう' in event.message.text:
-        content = 'おはようございます'
+    if 'あいさつ' in event.message.text:
+        content = results[0]
     elif 'こんにちは' in event.message.text:
         content = 'こんにちは'
     elif 'まー' in event.message.text:
@@ -94,7 +94,7 @@ def message_text(event):
 
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text=results[0])
+        TextSendMessage(text=content)
     )
 
 
