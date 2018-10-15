@@ -74,8 +74,8 @@ def message_text(event):
         content = 'おはようございます'
     elif 'こんにちは' in event.message.text:
         content = 'こんにちは'
-    elif 'いい天気' in event.message.text:
-        content = "そうですね"
+    elif 'まー' in event.message.text:
+        content = "きんたまさぶろー"
     else:
         content = 'ごめんなさい、あまり喋れません'
 
