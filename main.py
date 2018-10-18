@@ -93,13 +93,13 @@ def message_text(event):
         bun = ""
         
         # 指定した月の集計を取得
-        sql1 ="select sum(money) from wallet where date_part('month',opstime) = "+ bbb + " and payer = ¥'koji¥';"
+        sql1 ="select sum(money) from wallet where date_part('month',opstime) = "+ bbb + " and payer = 'koji';"
         cursor.execute(sql1)
         r1 = cursor.fetchone()
     
         bun = str(aaa[1]) + " 集計 こうじ：" + str(r1) + " まり："
         
-        sql2 ="select sum(money) from wallet where date_part('month',opstime) = "+ bbb + " and payer = ¥'mari¥';"
+        sql2 ="select sum(money) from wallet where date_part('month',opstime) = "+ bbb + " and payer = 'mari';"
         cursor.execute(sql2)
         r2 = cursor.fetchone()
         
