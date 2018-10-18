@@ -72,8 +72,8 @@ def message_text(event):
     db = "dbrp0st7k5ml0l"        
     con = psycopg2.connect("host=" + server + " port=" + port + " dbname=" + db + " user=" + user + " password=" + pwd)
     cursor = con.cursor()
-    cursor.execute("SELECT a1 FROM sample;")
-    results = cursor.fetchone()
+    #cursor.execute("SELECT a1 FROM sample;")
+    #results = cursor.fetchone()
 
 
     """
@@ -84,9 +84,29 @@ def message_text(event):
     )
     """
     if 'あいさつ' in event.message.text:
-        content = results[0]
-    elif 'こんにちは' in event.message.text:
-        content = 'こんにちは'
+        content = "jijijij"
+        
+    elif '集計' in event.message.text:
+        aaa = event.message.text.split()
+        bbb = aaa[1].replace('月', '')
+        
+        bun = ""
+        
+        # 指定した月の集計を取得
+        sql1 ="select sum(money) from wallet where date_part('month',opstime) = "+ bbb + " and payer = ¥'koji¥';"
+        cursor.execute(sql1)
+        r1 = cursor.fetchone()
+    
+        bun = str(aaa[1]) + " 集計 こうじ：" + str(r1) + " まり："
+        
+        sql2 ="select sum(money) from wallet where date_part('month',opstime) = "+ bbb + " and payer = ¥'mari¥';"
+        cursor.execute(sql2)
+        r2 = cursor.fetchone()
+        
+        bun = bun + str(r2)
+                
+        content = bun
+        
     elif 'まー' in event.message.text:
         content = "きんたまさぶろー"
     else:
