@@ -97,13 +97,13 @@ def message_text(event):
         cursor.execute(sql1)
         r1 = cursor.fetchone()
     
-        bun = str(aaa[1]) + " 集計 こうじ：" + str(r1) + " まり："
+        bun = str(aaa[1]) + " 集計 こうじ：" + r1 + " まり："
         
         sql2 ="select sum(money) from wallet where date_part('month',opstime) = "+ bbb + " and payer = 'mari';"
         cursor.execute(sql2)
         r2 = cursor.fetchone()
         
-        bun = bun + str(r2)
+        bun = bun + r2
                 
         content = bun
         
