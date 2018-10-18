@@ -97,14 +97,21 @@ def message_text(event):
         cursor.execute(sql1)
         r1 = cursor.fetchone()
     
-        bun = str(aaa[1]) + " 集計\nこうじ：" + str(r1[0]) + "\nまり："
+        bun = str(aaa[1]) + " 集計だお！\n\nこーじろー：" + str(r1[0]) + "\nまーじろー："
         
         sql2 ="select sum(money)::integer from wallet where date_part('month',opstime) = "+ bbb + " and payer = 'mari';"
         cursor.execute(sql2)
         r2 = cursor.fetchone()
         
         bun = bun + str(r2[0])
-                
+        
+        if r1 > r2:
+            bun = bun + "\n\nこーじろーの方がよーはろとる！"
+        elif r1 < r2:
+            bun = bun + "\n\nまーじろーの方がよーはろとる！
+        else:
+            bun = bun + "\n\n仲良く同じ額やで！
+        
         content = bun
         
     elif 'まー' in event.message.text:
