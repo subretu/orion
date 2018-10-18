@@ -108,9 +108,9 @@ def message_text(event):
         if r1 > r2:
             bun = bun + "\n\nこーじろーの方がよーはろとる！"
         elif r1 < r2:
-            bun = bun + "\n\nまーじろーの方がよーはろとる！
+            bun = bun + "\n\nまーじろーの方がよーはろとる！"
         else:
-            bun = bun + "\n\n仲良く同じ額やで！
+            bun = bun + "\n\n仲良く同じ額やで！"
         
         content = bun
         
