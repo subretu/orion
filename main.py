@@ -90,7 +90,9 @@ def message_text(event):
     elif 'まー' in event.message.text:
         content = "きんたまさぶろー"
     else:
-        content = 'ごめんなさい、あまり喋れません'
+        # content = 'ごめんなさい、あまり喋れません'
+        sss = event.message.text.split()
+        content = sss[0]
 
     line_bot_api.reply_message(
         event.reply_token,
