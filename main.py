@@ -76,25 +76,24 @@ def message_text(event):
     #cursor.execute("SELECT a1 FROM sample;")
     #results = cursor.fetchone()
 
-    # 支払者の名前定義
-    payer = ["こー","こうじ","まー","まり","まーちゃん"]
+    # メッセージを分割
+    umsg = event.message.text.split()
 
     if 'あいさつ' in event.message.text:
         content = "jijijij"
     
     # 支払金額のDB登録
-    elif event.message.text in payer: 
-        content = "いけてる"
-    
-        aaa = event.message.text.split()
-        name = aaa[0].replace('こー', 'koji').replace('こうじ', 'koji').replace('まー', 'mari').replace('まり', 'mari').replace('まーちゃん', 'mari')
-        money = aaa[1]
+    elif '登録' in umsg[0]:
+
+        name = umsg[1].replace('こー', 'koji').replace('こうじ', 'koji').replace('まー', 'mari').replace('まり', 'mari').replace('まーちゃん', 'mari')
+        money = umsg[2]
         nowtime = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
         
         sql1 ="insert into wallet (opstime,payer,money) values ('"+nowtime+"','"+name+"',"+money+");"
         cursor.execute(sql1)
 
         content = "金額の登録が完了したよ！"      
+ 
 
     elif '集計' in event.message.text:
         aaa = event.message.text.split()
