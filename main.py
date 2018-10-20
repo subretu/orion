@@ -16,6 +16,7 @@ import os
 import sys
 import psycopg2
 from argparse import ArgumentParser
+from datetime import datetime
 
 from flask import Flask, request, abort
 from linebot import (
@@ -75,21 +76,33 @@ def message_text(event):
     #cursor.execute("SELECT a1 FROM sample;")
     #results = cursor.fetchone()
 
-
-    """
-    line_bot_api.reply_message(
-        event.reply_token,
-        #TextSendMessage(text=event.message.text)
-        TextSendMessage(text="じろ～")
-    )
-    """
-    payer = ["こー","こうじ","孝治","まー","まり","茉里"]
+    # 支払者の名前定義
+    payer = ["こー","こうじ","まー","まり","まーちゃん"]
 
     if 'あいさつ' in event.message.text:
         content = "jijijij"
     
+    # 支払金額のDB登録
     elif event.message.text in payer: 
         content = "いけてる"
+    
+        aaa = event.message.text.split()
+
+        namelist = str.maketrans({
+          'こー': 'koji',
+          'こうじ': 'koji',
+          'まー': 'mari',
+          'まり': 'mari',
+          'まーちゃん': 'mari'
+        })
+        name = aaa[0].translate(namelist)
+        money = aaa[1]
+        nowtime = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+        
+        sql1 ="insert into wallet (opstime,payer,money) values ('"+nowtime+"','"+name+"',"+money+");"
+        cursor.execute(sql1)
+
+        content = "金額の登録が完了したよ！"      
 
     elif '集計' in event.message.text:
         aaa = event.message.text.split()
