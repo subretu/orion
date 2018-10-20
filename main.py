@@ -79,7 +79,7 @@ def message_text(event):
     # メッセージを分割
     umsg = event.message.text.split()
 
-    if 'あいさつ' in event.message.text:
+    if 'こんにちは' in event.message.text:
         content = "jijijij"
     
     # 支払金額のDB登録
@@ -126,9 +126,7 @@ def message_text(event):
     elif 'まー' in event.message.text:
         content = "きんたまさぶろー"
     else:
-        # content = 'ごめんなさい、あまり喋れません'
-        sss = event.message.text.split()
-        content = sss[0]
+        content = '？？？？規定にしたがって下さいよ！まったく！！'
 
     line_bot_api.reply_message(
         event.reply_token,
