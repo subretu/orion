@@ -83,9 +83,14 @@ def message_text(event):
         TextSendMessage(text="じろ～")
     )
     """
+    payer = ["こー","こうじ","孝治","まー","まり","茉里""]
+
     if 'あいさつ' in event.message.text:
         content = "jijijij"
-        
+    
+    elif event.message.text in payer: 
+        content = "いけてる"
+
     elif '集計' in event.message.text:
         aaa = event.message.text.split()
         bbb = aaa[1].replace('月', '')
