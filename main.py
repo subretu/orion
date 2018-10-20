@@ -87,15 +87,7 @@ def message_text(event):
         content = "いけてる"
     
         aaa = event.message.text.split()
-
-        namelist = str.maketrans({
-          'こー': 'koji',
-          'こうじ': 'koji',
-          'まー': 'mari',
-          'まり': 'mari',
-          'まーちゃん': 'mari',
-        })
-        name = aaa[0].translate(namelist)
+        name = aaa[0].replace('こー', 'koji').replace('こうじ', 'koji').replace('まー', 'mari').replace('まり', 'mari').replace('まーちゃん', 'mari')
         money = aaa[1]
         nowtime = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
         
