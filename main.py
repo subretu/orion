@@ -93,7 +93,7 @@ def message_text(event):
           'こうじ': 'koji',
           'まー': 'mari',
           'まり': 'mari',
-          'まーちゃん': 'mari'
+          'まーちゃん': 'mari',
         })
         name = aaa[0].translate(namelist)
         money = aaa[1]
