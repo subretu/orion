@@ -83,7 +83,7 @@ def message_text(event):
         TextSendMessage(text="じろ～")
     )
     """
-    payer = ["こー","こうじ","孝治","まー","まり","茉里""]
+    payer = ["こー","こうじ","孝治","まー","まり","茉里"]
 
     if 'あいさつ' in event.message.text:
         content = "jijijij"
