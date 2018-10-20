@@ -89,7 +89,7 @@ def message_text(event):
         money = umsg[2]
         nowtime = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
         
-        sql1 ="insert into wallet (opstime,payer,money) values ('"+nowtime+"','"+name+"',"+money+");"
+        sql1 ="BEGIN;insert into wallet (opstime,payer,money) values ('"+nowtime+"','"+name+"',"+money+");COMMIT;"
         cursor.execute(sql1)
 
         content = "金額の登録が完了したよ！"      
