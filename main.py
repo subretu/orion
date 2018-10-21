@@ -70,7 +70,7 @@ def get_connection():
     port = "5432"
     db = "dbrp0st7k5ml0l"        
     con = psycopg2.connect("host=" + server + " port=" + port + " dbname=" + db + " user=" + user + " password=" + pwd)
-    return psycopg2.connect(con)
+    return con
 
 # 支払額登録関数
 def inst_wallet(usr, money, nowtime, conn):
