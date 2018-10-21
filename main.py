@@ -17,7 +17,6 @@ import sys
 import psycopg2
 from argparse import ArgumentParser
 from datetime import datetime
-import re
 
 from flask import Flask, request, abort
 from linebot import (
@@ -76,7 +75,7 @@ def get_connection():
 # 支払額登録関数
 def inst_wallet(usr, money, nowtime, cur):
 
-    sql ="BEGIN;insert into wallet (opstime,payer,money) values ('"+nowtime+"','"+name+"',"+money+");COMMIT;"
+    sql ="BEGIN;insert into wallet (opstime,payer,money) values ('"+nowtime+"','"+usr+"',"+money+");COMMIT;"
     cur.execute(sql)
 
 
