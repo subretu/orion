@@ -17,6 +17,7 @@ import sys
 import psycopg2
 from argparse import ArgumentParser
 from datetime import datetime
+import random
 
 from flask import Flask, request, abort
 from linebot import (
@@ -62,6 +63,22 @@ def callback():
 
     return 'OK'
 
+# 返答サンプル
+def test1(test):
+
+    rd = random.randrange(10)
+
+    if rd  < 4:
+        reply = 'うるせぇ！'
+    
+    elif rd >= 4 and rd <7:
+        reply = 'クソ野郎！'
+
+    else:
+        reply = 'ばーか！くそ！！'
+
+    return reply
+
 
 @handler.add(MessageEvent, message=TextMessage)
 def message_text(event):
@@ -79,8 +96,9 @@ def message_text(event):
     # メッセージを分割
     umsg = event.message.text.split()
 
-    if 'こんにちは' in event.message.text:
-        content = "jijijij"
+    if '元気？' in event.message.text:
+        #content = "jijijij"
+        content = test1(event.message.text)
     
     # 支払金額のDB登録
     elif '登録' in umsg[0]:
