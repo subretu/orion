@@ -111,7 +111,7 @@ def message_text(event):
         usr = umsg[1].replace('こーじ', 'koji').replace('こー', 'koji').replace('まり', 'mari').replace('まー', 'mari')
         money = umsg[2]
         nowtime = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
-        # 支払金額登録
+        # 支払金額登録処理実行
         inst_wallet(usr,money,nowtime,conn)
    
         content = "金額の登録が完了したよ！"      
@@ -132,9 +132,6 @@ def message_text(event):
             msg = msg + "\n\n仲良く同じ額やで！"
         
         content = msg
-        
-    elif 'まー' in event.message.text:
-        content = "きんたまさぶろー"
 
     else:
         content = '規定にしたがって下さいよ！まったく！！'
