@@ -17,7 +17,7 @@ import sys
 import psycopg2
 from argparse import ArgumentParser
 from datetime import datetime
-import random
+import re
 
 from flask import Flask, request, abort
 from linebot import (
@@ -63,53 +63,52 @@ def callback():
 
     return 'OK'
 
-# 返答サンプル
-def test1(test):
-
-    rd = random.randrange(10)
-
-    if rd  < 4:
-        reply = 'うるせぇ！'
-    
-    elif rd >= 4 and rd <7:
-        reply = 'クソ野郎！'
-
-    else:
-        reply = 'ばーか！くそ！！'
-
-    return reply
-
-
-@handler.add(MessageEvent, message=TextMessage)
-def message_text(event):
-
+# DB接続用関数
+def get_connection():
     user = "vndjandgjvbilb"
     pwd = "baa627f8fad9e103962d75b6b282cbac9fa9898188f5f4560fd2fbe138b28859"
     server = "ec2-107-22-189-136.compute-1.amazonaws.com"
     port = "5432"
     db = "dbrp0st7k5ml0l"        
     con = psycopg2.connect("host=" + server + " port=" + port + " dbname=" + db + " user=" + user + " password=" + pwd)
-    cursor = con.cursor()
-    #cursor.execute("SELECT a1 FROM sample;")
-    #results = cursor.fetchone()
+    return psycopg2.connect(con)
 
-    # メッセージを分割
+# 支払額登録関数
+def inst_wallet(usr, money, nowtime, cur):
+
+    sql ="BEGIN;insert into wallet (opstime,payer,money) values ('"+nowtime+"','"+name+"',"+money+");COMMIT;"
+    cur.execute(sql)
+
+
+@handler.add(MessageEvent, message=TextMessage)
+def message_text(event):
+
+    """
+    user = "vndjandgjvbilb"
+    pwd = "baa627f8fad9e103962d75b6b282cbac9fa9898188f5f4560fd2fbe138b28859"
+    server = "ec2-107-22-189-136.compute-1.amazonaws.com"
+    port = "5432"
+    db = "dbrp0st7k5ml0l"        
+    con = psycopg2.connect("host=" + server + " port=" + port + " dbname=" + db + " user=" + user + " password=" + pwd)
+    """
+    # DBコネクション作成
+    conn = get_connection()
+    # DBカーソル作成
+    cur = conn.cursor()
+
+    # 受信メッセージを分割
     umsg = event.message.text.split()
 
-    if '元気？' in event.message.text:
-        #content = "jijijij"
-        content = test1(event.message.text)
-    
     # 支払金額のDB登録
-    elif '登録' in umsg[0]:
+    if '登録' in umsg[0]:
 
-        name = umsg[1].replace('こー', 'koji').replace('こーじ', 'koji').replace('まー', 'mari').replace('まり', 'mari')
+        usr = umsg[1].replace('こーじ', 'koji').replace('こー', 'koji').replace('まり', 'mari').replace('まー', 'mari')
         money = umsg[2]
         nowtime = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
         
-        sql1 ="BEGIN;insert into wallet (opstime,payer,money) values ('"+nowtime+"','"+name+"',"+money+");COMMIT;"
-        cursor.execute(sql1)
-
+        # 支払金額登録
+        inst_wallet(usr,money,nowtime,cur)
+        
         content = "金額の登録が完了したよ！"      
  
 
@@ -121,14 +120,14 @@ def message_text(event):
         
         # 指定した月の集計を取得
         sql1 ="select sum(money)::integer from wallet where date_part('month',opstime) = "+ bbb + " and payer = 'koji';"
-        cursor.execute(sql1)
-        r1 = cursor.fetchone()
+        cur.execute(sql1)
+        r1 = cur.fetchone()
     
         bun = str(aaa[1]) + " 集計だお！\n\nこーじろー：" + str(r1[0]) + "\nまーじろー："
         
         sql2 ="select sum(money)::integer from wallet where date_part('month',opstime) = "+ bbb + " and payer = 'mari';"
-        cursor.execute(sql2)
-        r2 = cursor.fetchone()
+        cur.execute(sql2)
+        r2 = cur.fetchone()
         
         bun = bun + str(r2[0])
         
@@ -145,6 +144,10 @@ def message_text(event):
         content = "きんたまさぶろー"
     else:
         content = '？？？？規定にしたがって下さいよ！まったく！！'
+    
+    # DB切断
+    cur.close()
+    conn.close()
 
     line_bot_api.reply_message(
         event.reply_token,
