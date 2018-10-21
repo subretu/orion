@@ -73,11 +73,14 @@ def get_connection():
     return psycopg2.connect(con)
 
 # 支払額登録関数
-def inst_wallet(usr, money, nowtime, cur):
+def inst_wallet(usr, money, nowtime, conn):
 
+    # カーソル作成
+    cur = conn.cursor()
     sql ="BEGIN;insert into wallet (opstime,payer,money) values ('"+nowtime+"','"+usr+"',"+money+");COMMIT;"
     cur.execute(sql)
-
+    # カーソル切断
+    cur.close()
 
 @handler.add(MessageEvent, message=TextMessage)
 def message_text(event):
@@ -92,8 +95,6 @@ def message_text(event):
     """
     # DBコネクション作成
     conn = get_connection()
-    # DBカーソル作成
-    cur = conn.cursor()
 
     # 受信メッセージを分割
     umsg = event.message.text.split()
@@ -106,7 +107,7 @@ def message_text(event):
         nowtime = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
         
         # 支払金額登録
-        inst_wallet(usr,money,nowtime,cur)
+        inst_wallet(usr,money,nowtime,conn)
         
         content = "金額の登録が完了したよ！"      
  
@@ -117,6 +118,9 @@ def message_text(event):
         
         bun = ""
         
+        # カーソル作成
+        cur = conn.cursor()
+
         # 指定した月の集計を取得
         sql1 ="select sum(money)::integer from wallet where date_part('month',opstime) = "+ bbb + " and payer = 'koji';"
         cur.execute(sql1)
@@ -144,8 +148,6 @@ def message_text(event):
     else:
         content = '？？？？規定にしたがって下さいよ！まったく！！'
     
-    # DB切断
-    cur.close()
     conn.close()
 
     line_bot_api.reply_message(
