@@ -103,7 +103,7 @@ def message_text(event):
     # 支払金額のDB登録
     elif '登録' in umsg[0]:
 
-        name = umsg[1].replace('こー', 'koji').replace('こうじ', 'koji').replace('まー', 'mari').replace('まり', 'mari').replace('まーちゃん', 'mari')
+        name = umsg[1].replace('こー', 'koji').replace('こーじ', 'koji').replace('まー', 'mari').replace('まり', 'mari')
         money = umsg[2]
         nowtime = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
         
