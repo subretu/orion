@@ -74,87 +74,78 @@ def get_connection():
 
 # 支払額登録関数
 def inst_wallet(usr, money, nowtime, conn):
-
     # カーソル作成
     cur = conn.cursor()
+    # 登録処理実行
     sql ="BEGIN;insert into wallet (opstime,payer,money) values ('"+nowtime+"','"+usr+"',"+money+");COMMIT;"
     cur.execute(sql)
     # カーソル切断
     cur.close()
 
+# 集計関数
+def agr_wallet(month, conn):
+    # カーソル作成
+    cur = conn.cursor()
+    # 集計処理実行
+    sql1 ="select sum(money)::integer from wallet where date_part('month',opstime) = "+ month + " and payer = 'koji';"
+    cur.execute(sql1)
+    r1 = cur.fetchone()    
+    sql2 ="select sum(money)::integer from wallet where date_part('month',opstime) = "+ month + " and payer = 'mari';"
+    cur.execute(sql2)
+    r2 = cur.fetchone()
+    # カーソル切断
+    cur.close()
+    # 金額を返す
+    return r1[0], r2[0]
+
 @handler.add(MessageEvent, message=TextMessage)
 def message_text(event):
 
-    """
-    user = "vndjandgjvbilb"
-    pwd = "baa627f8fad9e103962d75b6b282cbac9fa9898188f5f4560fd2fbe138b28859"
-    server = "ec2-107-22-189-136.compute-1.amazonaws.com"
-    port = "5432"
-    db = "dbrp0st7k5ml0l"        
-    con = psycopg2.connect("host=" + server + " port=" + port + " dbname=" + db + " user=" + user + " password=" + pwd)
-    """
     # DBコネクション作成
     conn = get_connection()
-
     # 受信メッセージを分割
     umsg = event.message.text.split()
 
     # 支払金額のDB登録
     if '登録' in umsg[0]:
-
         usr = umsg[1].replace('こーじ', 'koji').replace('こー', 'koji').replace('まり', 'mari').replace('まー', 'mari')
         money = umsg[2]
         nowtime = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
-        
         # 支払金額登録
         inst_wallet(usr,money,nowtime,conn)
-        
+   
         content = "金額の登録が完了したよ！"      
- 
 
-    elif '集計' in event.message.text:
-        aaa = event.message.text.split()
-        bbb = aaa[1].replace('月', '')
-        
-        bun = ""
-        
-        # カーソル作成
-        cur = conn.cursor()
-
-        # 指定した月の集計を取得
-        sql1 ="select sum(money)::integer from wallet where date_part('month',opstime) = "+ bbb + " and payer = 'koji';"
-        cur.execute(sql1)
-        r1 = cur.fetchone()
-    
-        bun = str(aaa[1]) + " 集計だお！\n\nこーじろー：" + str(r1[0]) + "\nまーじろー："
-        
-        sql2 ="select sum(money)::integer from wallet where date_part('month',opstime) = "+ bbb + " and payer = 'mari';"
-        cur.execute(sql2)
-        r2 = cur.fetchone()
-        
-        bun = bun + str(r2[0])
-        
-        if r1 > r2:
-            bun = bun + "\n\nこーじろーの方がよーはろとる！"
-        elif r1 < r2:
-            bun = bun + "\n\nまーじろーの方がよーはろとる！"
+    elif '集計' in umsg[0]:
+  
+        month = umsg[1].replace('月', '')
+        # 集計処理実行
+        agr_money = agr_wallet(month, conn)
+        # メッセージ作成
+        msg = str(umsg[1]) + " 集計だお！\n\nこーじろー：" + str(agr_money[0]) + "\nまーじろー：" + str(agr_money[1])
+        # 金額比較メッセ追加
+        if agr_money[0] > agr_money[1]:
+            msg = msg + "\n\nこーじろーの方がよーはろとる！"
+        elif agr_money[0] < agr_money[1]:
+            msg = msg + "\n\nまーじろーの方がよーはろとる！"
         else:
-            bun = bun + "\n\n仲良く同じ額やで！"
+            msg = msg + "\n\n仲良く同じ額やで！"
         
-        content = bun
+        content = msg
         
     elif 'まー' in event.message.text:
         content = "きんたまさぶろー"
+
     else:
-        content = '？？？？規定にしたがって下さいよ！まったく！！'
+        content = '規定にしたがって下さいよ！まったく！！'
     
+    # DB切断
     conn.close()
 
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=content)
     )
-
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
