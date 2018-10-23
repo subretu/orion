@@ -117,7 +117,11 @@ def message_text(event):
         # 支払金額登録処理実行
         inst_wallet(umsg[1],umsg[2],nowtime,conn)
 
-        content = "金額の登録が完了したよ！"      
+        content = "金額の登録が完了したよ！"
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=content)
+        )
 
     elif '集計' in umsg[0]:
         # 集計処理実行
@@ -133,16 +137,35 @@ def message_text(event):
             msg = msg + "\n\n仲良く同じ額やで！"
         
         content = msg
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=content)
+        )
 
     else:
         content = 'ちょっと何言ってか分からない。'
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=content)
+        )
+        line_bot_api.reply_message(
+            event.reply_token,
+            StickerSendMessage(package_id=1, sticker_id=113)
+        )
 
     # DB切断
     conn.close()
-
+    """
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=content)
+    )
+    """
+    line_bot_api.reply_message(
+        event.reply_token,
+        StickerSendMessage(
+            package_id=1,
+            sticker_id=113)
     )
 
 if __name__ == "__main__":
