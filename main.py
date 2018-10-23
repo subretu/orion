@@ -118,6 +118,7 @@ def message_text(event):
         inst_wallet(umsg[1],umsg[2],nowtime,conn)
 
         content = "金額の登録が完了したよ！"
+
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text=content)
@@ -137,6 +138,7 @@ def message_text(event):
             msg = msg + "\n\n仲良く同じ額やで！"
         
         content = msg
+
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text=content)
@@ -144,12 +146,12 @@ def message_text(event):
 
     else:
         content = 'ちょっと何言ってか分からない。'
-        """
+
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text=content)
         )
-        """
+
         line_bot_api.reply_message(
             event.reply_token,
             StickerSendMessage(package_id=1, sticker_id=113)
