@@ -76,8 +76,10 @@ def get_connection():
 def inst_wallet(usr, money, nowtime, conn):
     # カーソル作成
     cur = conn.cursor()
+    # 登録名に置き換え
+    usr2 = usr.replace('こーじ', 'koji').replace('こー', 'koji').replace('まり', 'mari').replace('まー', 'mari')
     # 登録処理実行
-    sql ="BEGIN;insert into wallet (opstime,payer,money) values ('"+nowtime+"','"+usr+"',"+money+");COMMIT;"
+    sql ="BEGIN;insert into wallet (opstime,payer,money) values ('"+nowtime+"','"+usr2+"',"+money+");COMMIT;"
     cur.execute(sql)
     # カーソル切断
     cur.close()
@@ -86,11 +88,13 @@ def inst_wallet(usr, money, nowtime, conn):
 def agr_wallet(month, conn):
     # カーソル作成
     cur = conn.cursor()
+    # 月を削除
+    month2 = umsg[1].replace('月', '')
     # 集計処理実行
-    sql1 ="select sum(money)::integer from wallet where date_part('month',opstime) = "+ month + " and payer = 'koji';"
+    sql1 ="select sum(money)::integer from wallet where date_part('month',opstime) = "+ month2 + " and payer = 'koji';"
     cur.execute(sql1)
     r1 = cur.fetchone()    
-    sql2 ="select sum(money)::integer from wallet where date_part('month',opstime) = "+ month + " and payer = 'mari';"
+    sql2 ="select sum(money)::integer from wallet where date_part('month',opstime) = "+ month2 + " and payer = 'mari';"
     cur.execute(sql2)
     r2 = cur.fetchone()
     # カーソル切断
@@ -108,19 +112,16 @@ def message_text(event):
 
     # 支払金額のDB登録
     if '登録' in umsg[0]:
-        usr = umsg[1].replace('こーじ', 'koji').replace('こー', 'koji').replace('まり', 'mari').replace('まー', 'mari')
-        money = umsg[2]
+        # 時間取得
         nowtime = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
         # 支払金額登録処理実行
-        inst_wallet(usr,money,nowtime,conn)
-   
+        inst_wallet(umsg[1],umsg[2],nowtime,conn)
+
         content = "金額の登録が完了したよ！"      
 
     elif '集計' in umsg[0]:
-  
-        month = umsg[1].replace('月', '')
         # 集計処理実行
-        agr_money = agr_wallet(month, conn)
+        agr_money = agr_wallet(umsg[1], conn)
         # メッセージ作成
         msg = str(umsg[1]) + " 集計だお！\n\nこーじろー：" + str(agr_money[0]) + "\nまーじろー：" + str(agr_money[1])
         # 金額比較メッセ追加
@@ -134,8 +135,8 @@ def message_text(event):
         content = msg
 
     else:
-        content = '規定にしたがって下さいよ！まったく！！'
-    
+        content = 'ちょっと何言ってか分からない。'
+
     # DB切断
     conn.close()
 
