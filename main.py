@@ -73,28 +73,28 @@ def get_connection():
     return con
 
 # 支払額登録関数
-def inst_wallet(usr, money, nowtime, conn):
+def inst_wallet(umsg, money, nowtime, conn):
     # カーソル作成
     cur = conn.cursor()
     # 登録名に置き換え
-    usr2 = usr.replace('こーじ', 'koji').replace('こー', 'koji').replace('まり', 'mari').replace('まー', 'mari')
+    usr = umsg.replace('こーじ', 'koji').replace('こー', 'koji').replace('まり', 'mari').replace('まー', 'mari')
     # 登録処理実行
-    sql ="BEGIN;insert into wallet (opstime,payer,money) values ('"+nowtime+"','"+usr2+"',"+money+");COMMIT;"
+    sql ="BEGIN;insert into wallet (opstime,payer,money) values ('"+nowtime+"','"+usr+"',"+money+");COMMIT;"
     cur.execute(sql)
     # カーソル切断
     cur.close()
 
 # 集計関数
-def agr_wallet(month, conn):
+def agr_wallet(umsg, conn):
     # カーソル作成
     cur = conn.cursor()
     # 月を削除
-    month2 = umsg[1].replace('月', '')
+    month = umsg.replace('月', '')
     # 集計処理実行
-    sql1 ="select sum(money)::integer from wallet where date_part('month',opstime) = "+ month2 + " and payer = 'koji';"
+    sql1 ="select sum(money)::integer from wallet where date_part('month',opstime) = "+ month + " and payer = 'koji';"
     cur.execute(sql1)
     r1 = cur.fetchone()    
-    sql2 ="select sum(money)::integer from wallet where date_part('month',opstime) = "+ month2 + " and payer = 'mari';"
+    sql2 ="select sum(money)::integer from wallet where date_part('month',opstime) = "+ month + " and payer = 'mari';"
     cur.execute(sql2)
     r2 = cur.fetchone()
     # カーソル切断
