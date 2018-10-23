@@ -144,10 +144,12 @@ def message_text(event):
 
     else:
         content = 'ちょっと何言ってか分からない。'
+        """
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text=content)
         )
+        """
         line_bot_api.reply_message(
             event.reply_token,
             StickerSendMessage(package_id=1, sticker_id=113)
