@@ -79,6 +79,7 @@ def inst_wallet(umsg, nowtime, conn):
     # 登録名に置き換え
     usr = umsg[1].replace('こーじ', 'koji').replace('こー', 'koji').replace('まり', 'mari').replace('まー', 'mari')
     # 金額合計
+    total = 0
     for n in umsg[2:len(umsg)]:
         total = total + int(n)
 
