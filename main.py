@@ -82,7 +82,7 @@ def inst_wallet(umsg, nowtime, conn):
     num = len(umsg)
     total = sum(umsg[3:num])
     # 登録処理実行
-    sql ="BEGIN;insert into wallet (opstime,payer,money) values ('"+nowtime+"','"+usr+"',"+total+");COMMIT;"
+    sql ="BEGIN;insert into wallet (opstime,payer,money) values ('"+nowtime+"','"+usr+"',"+str(total)+");COMMIT;"
     cur.execute(sql)
     # カーソル切断
     cur.close()
