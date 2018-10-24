@@ -73,11 +73,11 @@ def get_connection():
     return con
 
 # 支払額登録関数
-def inst_wallet(umsg, money, nowtime, conn):
+def inst_wallet(umsg, nowtime, conn):
     # カーソル作成
     cur = conn.cursor()
     # 登録名に置き換え
-    usr = umsg.replace('こーじ', 'koji').replace('こー', 'koji').replace('まり', 'mari').replace('まー', 'mari')]
+    usr = umsg[1].replace('こーじ', 'koji').replace('こー', 'koji').replace('まり', 'mari').replace('まー', 'mari')
     # 金額合計
     total = sum(money[2:len(money)+1])
     # 登録処理実行
@@ -117,7 +117,7 @@ def message_text(event):
         # 時間取得
         nowtime = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
         # 支払金額登録処理実行
-        inst_wallet(umsg[1],umsg,nowtime,conn)
+        inst_wallet(umsg,nowtime,conn)
 
         content = "金額の登録が完了したよ！"
 
