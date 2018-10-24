@@ -79,7 +79,8 @@ def inst_wallet(umsg, nowtime, conn):
     # 登録名に置き換え
     usr = umsg[1].replace('こーじ', 'koji').replace('こー', 'koji').replace('まり', 'mari').replace('まー', 'mari')
     # 金額合計
-    total = sum(umsg[2:int(len(umsg))+1])
+    num = len(umsg)
+    total = sum(umsg[2:num])
     # 登録処理実行
     sql ="BEGIN;insert into wallet (opstime,payer,money) values ('"+nowtime+"','"+usr+"',"+total+");COMMIT;"
     cur.execute(sql)
