@@ -149,15 +149,8 @@ def message_text(event):
 
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text=content),
-            StickerSendMessage(package_id=1, sticker_id=113)
+            [TextSendMessage(text=content),StickerSendMessage(package_id=1, sticker_id=113)]
         )
-        """
-        line_bot_api.reply_message(
-            event.reply_token,
-            StickerSendMessage(package_id=1, sticker_id=113)
-        )
-        """
 
     # DB切断
     conn.close()
