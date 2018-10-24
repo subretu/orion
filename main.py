@@ -77,9 +77,11 @@ def inst_wallet(umsg, money, nowtime, conn):
     # カーソル作成
     cur = conn.cursor()
     # 登録名に置き換え
-    usr = umsg.replace('こーじ', 'koji').replace('こー', 'koji').replace('まり', 'mari').replace('まー', 'mari')
+    usr = umsg.replace('こーじ', 'koji').replace('こー', 'koji').replace('まり', 'mari').replace('まー', 'mari')]
+    # 金額合計
+    total = sum(money[2:len(money)+1])
     # 登録処理実行
-    sql ="BEGIN;insert into wallet (opstime,payer,money) values ('"+nowtime+"','"+usr+"',"+money+");COMMIT;"
+    sql ="BEGIN;insert into wallet (opstime,payer,money) values ('"+nowtime+"','"+usr+"',"+total+");COMMIT;"
     cur.execute(sql)
     # カーソル切断
     cur.close()
@@ -115,7 +117,7 @@ def message_text(event):
         # 時間取得
         nowtime = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
         # 支払金額登録処理実行
-        inst_wallet(umsg[1],umsg[2],nowtime,conn)
+        inst_wallet(umsg[1],umsg,nowtime,conn)
 
         content = "金額の登録が完了したよ！"
 
@@ -149,17 +151,12 @@ def message_text(event):
 
         line_bot_api.reply_message(
             event.reply_token,
-            [TextSendMessage(text=content),StickerSendMessage(package_id=1, sticker_id=113)]
+            [TextSendMessage(text=content),
+            StickerSendMessage(package_id=1, sticker_id=113)]
         )
 
     # DB切断
     conn.close()
-    """
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text=content)
-    )
-    """
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
