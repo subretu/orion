@@ -102,10 +102,13 @@ def agr_wallet(umsg, conn):
     sql2 ="select sum(money)::integer from wallet where date_part('month',opstime) = "+ month + " and payer = 'mari';"
     cur.execute(sql2)
     r2 = cur.fetchone()
+    # 定額からの差額を算出
+    kjs = 10000 - r1[0]
+    mrs = 10000 - r2[0]
     # カーソル切断
     cur.close()
     # 金額を返す
-    return r1[0], r2[0]
+    return r1[0], r2[0], kjs, mrs
 
 @handler.add(MessageEvent, message=TextMessage)
 def message_text(event):
@@ -133,16 +136,25 @@ def message_text(event):
         # 集計処理実行
         agr_money = agr_wallet(umsg[1], conn)
         # メッセージ作成
-        msg = str(umsg[1]) + " 集計だお！\n\nこーじろー：" + str(agr_money[0]) + "\nまーじろー：" + str(agr_money[1])
+        msg = str(umsg[1]) + " 集計しました！\n\nこー：" + str(agr_money[0]) + " (差額：" + str(agr_money[2]) + ")\nまー：" + str(agr_money[1])+ " (差額：" + str(agr_money[3])
         # 金額比較メッセ追加
         if agr_money[0] > agr_money[1]:
-            msg = msg + "\n\nこーじろーの方がよーはろとる！"
+            msg = msg + "\n\nこーの方がよーはろとる！"
         elif agr_money[0] < agr_money[1]:
-            msg = msg + "\n\nまーじろーの方がよーはろとる！"
+            msg = msg + "\n\nまーの方がよーはろとる！"
         else:
             msg = msg + "\n\n仲良く同じ額やで！"
         
         content = msg
+
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=content)
+        )
+
+    elif '起動' in umsg[0]:
+        
+        content = '生きてます！'
 
         line_bot_api.reply_message(
             event.reply_token,
