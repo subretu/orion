@@ -136,7 +136,7 @@ def message_text(event):
         # 集計処理実行
         agr_money = agr_wallet(umsg[1], conn)
         # メッセージ作成
-        msg = str(umsg[1]) + " 集計しました！\n\nこー：" + str(agr_money[0]) + " (差額：" + str(agr_money[2]) + ")\nまー：" + str(agr_money[1])+ " (差額：" + str(agr_money[3]) + ")"
+        msg = str(umsg[1]) + "分 集計しました！\n\nこー：" + str(agr_money[0]) + " (差額：" + str(agr_money[2]) + ")\nまー：" + str(agr_money[1])+ " (差額：" + str(agr_money[3]) + ")"
         # 金額比較メッセ追加
         if agr_money[0] > agr_money[1]:
             msg = msg + "\n\nこーの方がよーはろとる！"
