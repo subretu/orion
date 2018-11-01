@@ -99,7 +99,7 @@ def agr_wallet(umsg, conn):
     sql1 ="select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "+ month + " and payer = 'koji';"
     cur.execute(sql1)
     r1 = cur.fetchone()    
-    sql2 ="select coalesce(um(money),0)::integer from wallet where date_part('month',opstime) = "+ month + " and payer = 'mari';"
+    sql2 ="select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "+ month + " and payer = 'mari';"
     cur.execute(sql2)
     r2 = cur.fetchone()
     # 定額からの差額を算出
