@@ -96,10 +96,10 @@ def agr_wallet(umsg, conn):
     # 月を削除
     month = umsg.replace('月', '')
     # 集計処理実行
-    sql1 ="select sum(money)::integer from wallet where date_part('month',opstime) = "+ month + " and payer = 'koji';"
+    sql1 ="select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "+ month + " and payer = 'koji';"
     cur.execute(sql1)
     r1 = cur.fetchone()    
-    sql2 ="select sum(money)::integer from wallet where date_part('month',opstime) = "+ month + " and payer = 'mari';"
+    sql2 ="select coalesce(um(money),0)::integer from wallet where date_part('month',opstime) = "+ month + " and payer = 'mari';"
     cur.execute(sql2)
     r2 = cur.fetchone()
     # 定額からの差額を算出
