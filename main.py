@@ -86,8 +86,18 @@ def inst_wallet(umsg, nowtime, conn):
     # 登録処理実行
     sql ="BEGIN;insert into wallet (opstime,payer,money) values ('"+nowtime+"','"+usr+"',"+str(total)+");COMMIT;"
     cur.execute(sql)
+
+    #now_month = '{0:%m}'.format(datetime.datetime.now())
+    now_month = '{0:%m}'.format(datetime.datetime.strptime(nowtime, '%Y/%m/%d %H:%M:%S'))
+
+    # 集計関数呼び出し
+    agr_money = agr_wallet(now_month+"月", conn)
+
     # カーソル切断
     cur.close()
+
+    # 金額を返す
+    return agr_money
 
 # 集計関数
 def agr_wallet(umsg, conn):
@@ -118,14 +128,14 @@ def message_text(event):
     # 受信メッセージを分割
     umsg = event.message.text.split()
 
-    # 支払金額のDB登録
+    # 支払金額のDB登録＋集計処理
     if '登録' in umsg[0]:
         # 時間取得
         nowtime = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
-        # 支払金額登録処理実行
-        inst_wallet(umsg,nowtime,conn)
+        # 支払金額登録処理+集計処理実行
+        agr_money = inst_wallet(umsg,nowtime,conn)
 
-        content = "金額の登録が完了したよ！"
+        content = "金額の登録が完了したよ！\n\n今月の集計\n\n\こー：" + str(agr_money[0]) + " (差額：" + str(agr_money[2]) + ")\nまー：" + str(agr_money[1])+ " (差額：" + str(agr_money[3]) + ")"
 
         line_bot_api.reply_message(
             event.reply_token,
@@ -136,16 +146,7 @@ def message_text(event):
         # 集計処理実行
         agr_money = agr_wallet(umsg[1], conn)
         # メッセージ作成
-        msg = str(umsg[1]) + "分 集計しました！\n\nこー：" + str(agr_money[0]) + " (差額：" + str(agr_money[2]) + ")\nまー：" + str(agr_money[1])+ " (差額：" + str(agr_money[3]) + ")"
-        # 金額比較メッセ追加
-        if agr_money[0] > agr_money[1]:
-            msg = msg + "\n\nこーの方がよーはろとる！"
-        elif agr_money[0] < agr_money[1]:
-            msg = msg + "\n\nまーの方がよーはろとる！"
-        else:
-            msg = msg + "\n\n仲良く同じ額やで！"
-        
-        content = msg
+        content = str(umsg[1]) + "分 集計しました！\n\nこー：" + str(agr_money[0]) + " (差額：" + str(agr_money[2]) + ")\nまー：" + str(agr_money[1])+ " (差額：" + str(agr_money[3]) + ")"
 
         line_bot_api.reply_message(
             event.reply_token,
