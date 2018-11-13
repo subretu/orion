@@ -16,7 +16,7 @@ import os
 import sys
 import psycopg2
 from argparse import ArgumentParser
-from datetime import datetime
+import datetime
 
 from flask import Flask, request, abort
 from linebot import (
@@ -131,7 +131,7 @@ def message_text(event):
     # 支払金額のDB登録＋集計処理
     if '登録' in umsg[0]:
         # 時間取得
-        nowtime = datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+        nowtime = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
         # 支払金額登録処理+集計処理実行
         agr_money = inst_wallet(umsg,nowtime,conn)
 
