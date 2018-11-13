@@ -16,7 +16,7 @@ import os
 import sys
 import psycopg2
 from argparse import ArgumentParser
-from datetime import datetime
+import datetime
 
 from flask import Flask, request, abort
 from linebot import (
