@@ -135,13 +135,13 @@ def message_text(event):
         # 支払金額登録処理+集計処理実行
         agr_money = inst_wallet(umsg,nowtime,conn)
 
-        content = "金額の登録が完了したよ！\n\n今月の集計\n\n\こー：" + str(agr_money[0]) + " (差額：" + str(agr_money[2]) + ")\nまー：" + str(agr_money[1])+ " (差額：" + str(agr_money[3]) + ")"
+        content = "金額の登録が完了したよ！\n\n【現在までの集計】/n" + '{0:%m}'.format(datetime.datetime.strptime(nowtime, '%Y/%m/%d %H:%M:%S')) + "月分/n + "こー：" + str(agr_money[0]) + " (差額：" + str(agr_money[2]) + ")\nまー：" + str(agr_money[1])+ " (差額：" + str(agr_money[3]) + ")"
 
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text=content)
         )
-
+    # 集計処理
     elif '集計' in umsg[0]:
         # 集計処理実行
         agr_money = agr_wallet(umsg[1], conn)
