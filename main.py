@@ -64,11 +64,11 @@ def callback():
 
 # DB接続用関数
 def get_connection():
-    user = "vndjandgjvbilb"
-    pwd = "baa627f8fad9e103962d75b6b282cbac9fa9898188f5f4560fd2fbe138b28859"
-    server = "ec2-107-22-189-136.compute-1.amazonaws.com"
+    user = os.getenv('POSTGRES_USER', None)
+    pwd = os.getenv('POSTGRES_PASS', None)
+    server = os.getenv('POSTGRES_HOST', None)
     port = "5432"
-    db = "dbrp0st7k5ml0l"        
+    db = os.getenv('POSTGRES_DB', None)        
     con = psycopg2.connect("host=" + server + " port=" + port + " dbname=" + db + " user=" + user + " password=" + pwd)
     return con
 
