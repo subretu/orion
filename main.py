@@ -72,6 +72,7 @@ def get_connection():
     con = psycopg2.connect("host=" + server + " port=" + port + " dbname=" + db + " user=" + user + " password=" + pwd)
     return con
 
+
 # 支払額登録関数
 def inst_wallet(umsg, nowtime, conn):
     # カーソル作成
