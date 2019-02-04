@@ -165,12 +165,16 @@ def message_text(event):
         )
     elif 'テスト' in umsg[0]:
 
-        buttons_template_message  = TemplateSendMessage(
-            alt_text='予定日を設定',
+        confirm_template_message = TemplateSendMessage(
+            alt_text='Confirm template',
             template=ConfirmTemplate(
-                text='予定日を設定',
-                title='集計',
+                text='Are you sure?',
                 actions=[
+                    PostbackAction(
+                        label='postback',
+                        text='postback text',
+                        data='action=buy&itemid=1'
+                    ),
                     MessageAction(
                         label='message',
                         text='message text'
@@ -180,7 +184,7 @@ def message_text(event):
         )
         line_bot_api.reply_message(
                 event.reply_token,
-                buttons_template_message
+                confirm_template_message
         )
     else:
         content = 'ちょっと何言ってか分からない。'
