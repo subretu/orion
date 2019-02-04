@@ -165,26 +165,22 @@ def message_text(event):
         )
     elif 'テスト' in umsg[0]:
 
-        date_picker = TemplateSendMessage(
+        buttons_template_message  = TemplateSendMessage(
             alt_text='予定日を設定',
             template=ButtonsTemplate(
                 text='予定日を設定',
-                title='YYYY-MM-dd',
+                title='集計',
                 actions=[
-                    DatetimePickerTemplateAction(
-                        label='設定',
-                        data='action=buy&itemid=1',
-                        mode='date',
-                        initial='2017-04-01',
-                        min='2017-04-01',
-                        max='2099-12-31'
+                    MessageAction(
+                        label='message',
+                        text='message text'
                     )
                 ]
             )
         )
         line_bot_api.reply_message(
                 event.reply_token,
-                date_picker
+                buttons_template_message
         )
     else:
         content = 'ちょっと何言ってか分からない。'
