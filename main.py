@@ -26,9 +26,9 @@ from linebot.exceptions import (
     InvalidSignatureError
 )
 from linebot.models import (
-    MessageEvent, TextMessage, TextSendMessage, StickerSendMessage,
+    MessageEvent, TextMessage, TextSendMessage, StickerSendMessage, TemplateSendMessage, ButtonsTemplate,
+    MessageAction, ConfirmTemplate, PostbackAction
 )
-from linebot.models import TemplateSendMessage, ButtonsTemplate, DatetimePickerTemplateAction
 
 app = Flask(__name__)
 
@@ -167,7 +167,7 @@ def message_text(event):
 
         buttons_template_message  = TemplateSendMessage(
             alt_text='予定日を設定',
-            template=ButtonsTemplate(
+            template=ConfirmTemplate(
                 text='予定日を設定',
                 title='集計',
                 actions=[
