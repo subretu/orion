@@ -28,6 +28,7 @@ from linebot.exceptions import (
 from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage, StickerSendMessage,
 )
+from linebot.models import TemplateSendMessage, ButtonsTemplate, DatetimePickerTemplateAction
 
 app = Flask(__name__)
 
@@ -162,7 +163,29 @@ def message_text(event):
             event.reply_token,
             TextSendMessage(text=content)
         )
+    elif 'テスト' in umsg[0]:
 
+        date_picker = TemplateSendMessage(
+            alt_text='予定日を設定',
+            template=ButtonsTemplate(
+                text='予定日を設定',
+                title='YYYY-MM-dd',
+                actions=[
+                    DatetimePickerTemplateAction(
+                        label='設定',
+                        data='action=buy&itemid=1',
+                        mode='date',
+                        initial='2017-04-01',
+                        min='2017-04-01',
+                        max='2099-12-31'
+                    )
+                ]
+            )
+        )
+        line_bot_api.reply_message(
+                event.reply_token,
+                date_picker
+        )
     else:
         content = 'ちょっと何言ってか分からない。'
 
