@@ -179,8 +179,8 @@ def message_text(event):
                         data='action=buy&itemid=1'
                     ),
                     MessageAction(
-                        label=now_month+"月",
-                        text=now_month+"月"
+                        label=now_month+'月',
+                        text=now_month+'月'
                     )
                 ]
             )
