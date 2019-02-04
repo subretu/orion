@@ -165,6 +165,9 @@ def message_text(event):
         )
     elif 'テスト' in umsg[0]:
 
+        # 時間取得
+        nowtime = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+        now_month = '{0:%m}'.format(datetime.datetime.strptime(nowtime, '%Y/%m/%d %H:%M:%S'))
         confirm_template_message = TemplateSendMessage(
             alt_text='Confirm template',
             template=ConfirmTemplate(
@@ -176,8 +179,8 @@ def message_text(event):
                         data='action=buy&itemid=1'
                     ),
                     MessageAction(
-                        label='message',
-                        text='message text'
+                        label=now_month+"月",
+                        text=now_month+"月"
                     )
                 ]
             )
