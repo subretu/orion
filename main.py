@@ -29,6 +29,12 @@ from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage, StickerSendMessage, TemplateSendMessage, ButtonsTemplate,
     MessageAction, ConfirmTemplate, PostbackAction
 )
+from linebot.models import ( # 使用するモデル(イベント, メッセージ, アクションなど)を列挙
+    FollowEvent, UnfollowEvent, MessageEvent, PostbackEvent,
+    TextMessage, TextSendMessage, TemplateSendMessage,
+    ButtonsTemplate, CarouselTemplate, CarouselColumn,
+    PostbackTemplateAction
+)
 
 app = Flask(__name__)
 
@@ -122,6 +128,21 @@ def agr_wallet(umsg, conn):
     # 金額を返す
     return r1[0], r2[0], kjs, mrs
 
+# ボタンの入力を受け取るPostbackEvent
+@handler.add(PostbackEvent)
+def on_postback(event):
+    reply_token = event.reply_token
+    postback_msg = event.postback.data
+
+    if postback_msg == 'on':
+        line_bot_api.reply_message(
+            messages=TextSendMessage(text='is_showオプションは1だよ！')
+        )
+    elif postback_msg == 'off':
+        line_bot_api.reply_message(
+            messages=TextSendMessage(text='is_showオプションは0だよ！')
+        )
+
 @handler.add(MessageEvent, message=TextMessage)
 def message_text(event):
 
@@ -174,13 +195,14 @@ def message_text(event):
                 text='Are you sure?',
                 actions=[
                     PostbackAction(
-                        label='postback',
-                        text='postback text',
-                        data='action=buy&itemid=1'
+                        label='on',
+                        text='on',
+                        data='on'
                     ),
-                    MessageAction(
-                        label=now_month+'月',
-                        text=now_month+'月'
+                     PostbackAction(
+                        label='off',
+                        text='off',
+                        data='off'
                     )
                 ]
             )
