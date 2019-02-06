@@ -225,21 +225,21 @@ def message_text(event):
             """
             # 時間取得
             nowtime = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
-            nowtime_bf =  nowtime-datetime.timedelta(days=1)
+            #nowtime_bf =  nowtime-datetime.timedelta(days=1)
             now_month = '{0:%m}'.format(datetime.datetime.strptime(nowtime, '%Y/%m/%d %H:%M:%S'))
-            now_month2 = '{0:%m}'.format(datetime.datetime.strptime(nowtime_bf, '%Y/%m/%d %H:%M:%S'))
+            #now_month2 = '{0:%m}'.format(datetime.datetime.strptime(nowtime_bf, '%Y/%m/%d %H:%M:%S'))
             confirm_template_message = TemplateSendMessage(
                 alt_text='Confirm template',
                 template=ConfirmTemplate(
                     text='Are you sure?',
                     actions=[
                         MessageAction(
-                            label=now_month+'月',
-                            text=now_month+'月'
+                            label=now_month+"月",
+                            text=now_month+"月"
                         ),                    
                         MessageAction(
-                            label=now_month2+'月',
-                            text=now_month2+'月'
+                            label=now_month+"月",
+                            text=now_month+"月"
                         )
                     ]
                 )
