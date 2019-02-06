@@ -172,10 +172,12 @@ def message_text(event):
                 TextSendMessage(text=content)
             )
         elif 'テスト' in umsg[0]:
-
+            """
             # 時間取得
             nowtime = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+            nowtime_bf =  nowtime-datetime.timedelta(days=1)
             now_month = '{0:%m}'.format(datetime.datetime.strptime(nowtime, '%Y/%m/%d %H:%M:%S'))
+            now_month2 = '{0:%m}'.format(datetime.datetime.strptime(nowtime_bf, '%Y/%m/%d %H:%M:%S'))
             confirm_template_message = TemplateSendMessage(
                 alt_text='Confirm template',
                 template=ConfirmTemplate(
@@ -196,6 +198,7 @@ def message_text(event):
                     event.reply_token,
                     confirm_template_message
             )
+        """
         else:
             content = 'ちょっと何言ってか分からない。'
 
@@ -205,10 +208,11 @@ def message_text(event):
                 StickerSendMessage(package_id=1, sticker_id=113)]
             )
 
-    elif len(umsg) = 1:
+    elif len(umsg) == 1:
 
         # 集計処理
         if '集計' in umsg[0]:
+            """
             # 集計処理実行
             agr_money = agr_wallet(umsg[1], conn)
             # メッセージ作成
@@ -218,6 +222,43 @@ def message_text(event):
                 event.reply_token,
                 TextSendMessage(text=content)
             )
+            """
+            # 時間取得
+            nowtime = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+            nowtime_bf =  nowtime-datetime.timedelta(days=1)
+            now_month = '{0:%m}'.format(datetime.datetime.strptime(nowtime, '%Y/%m/%d %H:%M:%S'))
+            now_month2 = '{0:%m}'.format(datetime.datetime.strptime(nowtime_bf, '%Y/%m/%d %H:%M:%S'))
+            confirm_template_message = TemplateSendMessage(
+                alt_text='Confirm template',
+                template=ConfirmTemplate(
+                    text='Are you sure?',
+                    actions=[
+                        MessageAction(
+                            label=now_month+'月',
+                            text=now_month+'月'
+                        ),                    
+                        MessageAction(
+                            label=now_month2+'月',
+                            text=now_month2+'月'
+                        )
+                    ]
+                )
+            )
+            line_bot_api.reply_message(
+                    event.reply_token,
+                    confirm_template_message
+            )
+        elif '月' in umsg[0]:
+            # 集計処理実行
+            agr_money = agr_wallet(umsg[0], conn)
+            # メッセージ作成
+            content = str(umsg[1]) + "分 集計しました！\n\nこー：" + str(agr_money[0]) + " (差額：" + str(agr_money[2]) + ")\nまー：" + str(agr_money[1])+ " (差額：" + str(agr_money[3]) + ")"
+
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text=content)
+            )
+
         else:
             content = 'ちょっと何言ってか分からない。'
 
