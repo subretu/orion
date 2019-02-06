@@ -179,10 +179,9 @@ def message_text(event):
             template=ConfirmTemplate(
                 text='Are you sure?',
                 actions=[
-                    PostbackAction(
+                    MessageAction(
                         label='postback1',
-                        text='postback text1',
-                        data='action=buy&itemid=1'
+                        text='postback text1'
                     ),                    
                     MessageAction(
                         label='message',
