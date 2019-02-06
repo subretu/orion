@@ -252,7 +252,7 @@ def message_text(event):
             # 集計処理実行
             agr_money = agr_wallet(umsg[0], conn)
             # メッセージ作成
-            content = str(umsg[1]) + "分 集計しました！\n\nこー：" + str(agr_money[0]) + " (差額：" + str(agr_money[2]) + ")\nまー：" + str(agr_money[1])+ " (差額：" + str(agr_money[3]) + ")"
+            content = str(umsg[0]) + "分 集計しました！\n\nこー：" + str(agr_money[0]) + " (差額：" + str(agr_money[2]) + ")\nまー：" + str(agr_money[1])+ " (差額：" + str(agr_money[3]) + ")"
 
             line_bot_api.reply_message(
                 event.reply_token,
