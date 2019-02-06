@@ -136,64 +136,96 @@ def message_text(event):
     # 受信メッセージを分割
     umsg = event.message.text.split()
 
-    # 支払金額のDB登録＋集計処理
-    if '登録' in umsg[0]:
-        # 時間取得
-        nowtime = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
-        # 支払金額登録処理+集計処理実行
-        agr_money = inst_wallet(umsg,nowtime,conn)
+    if len(umsg) > 1:
 
-        content = "金額の登録が完了したよ！\n\n【現在までの集計】\n" + '{0:%m}'.format(datetime.datetime.strptime(nowtime, '%Y/%m/%d %H:%M:%S')) + "月分\nこー：" + str(agr_money[0]) + " (差額：" + str(agr_money[2]) + ")\nまー：" + str(agr_money[1])+ " (差額：" + str(agr_money[3]) + ")"
+        # 支払金額のDB登録＋集計処理
+        if '登録' in umsg[0]:
+            # 時間取得
+            nowtime = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+            # 支払金額登録処理+集計処理実行
+            agr_money = inst_wallet(umsg,nowtime,conn)
 
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text=content)
-        )
-    # 集計処理
-    elif '集計' in umsg[0]:
-        # 集計処理実行
-        agr_money = agr_wallet(umsg[1], conn)
-        # メッセージ作成
-        content = str(umsg[1]) + "分 集計しました！\n\nこー：" + str(agr_money[0]) + " (差額：" + str(agr_money[2]) + ")\nまー：" + str(agr_money[1])+ " (差額：" + str(agr_money[3]) + ")"
+            content = "金額の登録が完了したよ！\n\n【現在までの集計】\n" + '{0:%m}'.format(datetime.datetime.strptime(nowtime, '%Y/%m/%d %H:%M:%S')) + "月分\nこー：" + str(agr_money[0]) + " (差額：" + str(agr_money[2]) + ")\nまー：" + str(agr_money[1])+ " (差額：" + str(agr_money[3]) + ")"
 
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text=content)
-        )
-
-    elif '起動' in umsg[0]:
-        
-        content = '生きてます！'
-
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text=content)
-        )
-    elif 'テスト' in umsg[0]:
-
-        # 時間取得
-        nowtime = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
-        now_month = '{0:%m}'.format(datetime.datetime.strptime(nowtime, '%Y/%m/%d %H:%M:%S'))
-        confirm_template_message = TemplateSendMessage(
-            alt_text='Confirm template',
-            template=ConfirmTemplate(
-                text='Are you sure?',
-                actions=[
-                    MessageAction(
-                        label='postback1',
-                        text='postback text1'
-                    ),                    
-                    MessageAction(
-                        label='message',
-                        text='message text'
-                    )
-                ]
-            )
-        )
-        line_bot_api.reply_message(
+            line_bot_api.reply_message(
                 event.reply_token,
-                confirm_template_message
-        )
+                TextSendMessage(text=content)
+            )
+        # 集計処理
+        elif '集計' in umsg[0]:
+            # 集計処理実行
+            agr_money = agr_wallet(umsg[1], conn)
+            # メッセージ作成
+            content = str(umsg[1]) + "分 集計しました！\n\nこー：" + str(agr_money[0]) + " (差額：" + str(agr_money[2]) + ")\nまー：" + str(agr_money[1])+ " (差額：" + str(agr_money[3]) + ")"
+
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text=content)
+            )
+
+        elif '起動' in umsg[0]:
+            
+            content = '生きてます！'
+
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text=content)
+            )
+        elif 'テスト' in umsg[0]:
+
+            # 時間取得
+            nowtime = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+            now_month = '{0:%m}'.format(datetime.datetime.strptime(nowtime, '%Y/%m/%d %H:%M:%S'))
+            confirm_template_message = TemplateSendMessage(
+                alt_text='Confirm template',
+                template=ConfirmTemplate(
+                    text='Are you sure?',
+                    actions=[
+                        MessageAction(
+                            label='postback1',
+                            text='postback text1'
+                        ),                    
+                        MessageAction(
+                            label='message',
+                            text='message text'
+                        )
+                    ]
+                )
+            )
+            line_bot_api.reply_message(
+                    event.reply_token,
+                    confirm_template_message
+            )
+        else:
+            content = 'ちょっと何言ってか分からない。'
+
+            line_bot_api.reply_message(
+                event.reply_token,
+                [TextSendMessage(text=content),
+                StickerSendMessage(package_id=1, sticker_id=113)]
+            )
+
+    elif len(umsg) = 1:
+
+        # 集計処理
+        if '集計' in umsg[0]:
+            # 集計処理実行
+            agr_money = agr_wallet(umsg[1], conn)
+            # メッセージ作成
+            content = str(umsg[1]) + "分 集計しました！\n\nこー：" + str(agr_money[0]) + " (差額：" + str(agr_money[2]) + ")\nまー：" + str(agr_money[1])+ " (差額：" + str(agr_money[3]) + ")"
+
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text=content)
+            )
+        else:
+            content = 'ちょっと何言ってか分からない。'
+
+            line_bot_api.reply_message(
+                event.reply_token,
+                [TextSendMessage(text=content),
+                StickerSendMessage(package_id=1, sticker_id=113)]
+            )
     else:
         content = 'ちょっと何言ってか分からない。'
 
@@ -201,7 +233,8 @@ def message_text(event):
             event.reply_token,
             [TextSendMessage(text=content),
             StickerSendMessage(package_id=1, sticker_id=113)]
-        )
+        )     
+
 
     # DB切断
     conn.close()
