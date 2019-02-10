@@ -17,7 +17,6 @@ import sys
 import psycopg2
 from argparse import ArgumentParser
 import datetime
-
 from flask import Flask, request, abort
 from linebot import (
     LineBotApi, WebhookHandler
@@ -25,15 +24,12 @@ from linebot import (
 from linebot.exceptions import (
     InvalidSignatureError
 )
-from linebot.models import (
-    MessageEvent, TextMessage, TextSendMessage, StickerSendMessage, TemplateSendMessage, ButtonsTemplate,
-    MessageAction, ConfirmTemplate, PostbackAction
-)
 from linebot.models import ( # 使用するモデル(イベント, メッセージ, アクションなど)を列挙
     FollowEvent, UnfollowEvent, MessageEvent, PostbackEvent,
     TextMessage, TextSendMessage, TemplateSendMessage,
     ButtonsTemplate, CarouselTemplate, CarouselColumn,
-    PostbackTemplateAction
+    PostbackTemplateAction, StickerSendMessage,
+    MessageAction, ConfirmTemplate, PostbackAction
 )
 
 app = Flask(__name__)
@@ -50,7 +46,6 @@ if channel_access_token is None:
 
 line_bot_api = LineBotApi(channel_access_token)
 handler = WebhookHandler(channel_secret)
-
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -79,7 +74,6 @@ def get_connection():
     con = psycopg2.connect("host=" + server + " port=" + port + " dbname=" + db + " user=" + user + " password=" + pwd)
     return con
 
-
 # 支払額登録関数
 def inst_wallet(umsg, nowtime, conn):
     # カーソル作成
@@ -95,7 +89,6 @@ def inst_wallet(umsg, nowtime, conn):
     sql ="BEGIN;insert into wallet (opstime,payer,money) values ('"+nowtime+"','"+usr+"',"+str(total)+");COMMIT;"
     cur.execute(sql)
 
-    #now_month = '{0:%m}'.format(datetime.datetime.now())
     now_month = '{0:%m}'.format(datetime.datetime.strptime(nowtime, '%Y/%m/%d %H:%M:%S'))
 
     # 集計関数呼び出し
@@ -144,8 +137,7 @@ def message_text(event):
             nowtime = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
             # 支払金額登録処理+集計処理実行
             agr_money = inst_wallet(umsg,nowtime,conn)
-
-            content = "金額の登録が完了したよ！\n\n【現在までの集計】\n" + '{0:%m}'.format(datetime.datetime.strptime(nowtime, '%Y/%m/%d %H:%M:%S')) + "月分\nこー：" + str(agr_money[0]) + " (差額：" + str(agr_money[2]) + ")\nまー：" + str(agr_money[1])+ " (差額：" + str(agr_money[3]) + ")"
+            content = "金額の登録が完了したよ！\n\n【現在までの集計】\n"+'{0:%m}'.format(datetime.datetime.strptime(nowtime, '%Y/%m/%d %H:%M:%S'))+"月分\nこー：" + str(agr_money[0]) + " (差額：" + str(agr_money[2]) + ")\nまー：" + str(agr_money[1])+ " (差額：" + str(agr_money[3]) + ")"
 
             line_bot_api.reply_message(
                 event.reply_token,
@@ -163,7 +155,7 @@ def message_text(event):
                 TextSendMessage(text=content)
             )
         else:
-            content = 'ちょっと何言ってか分からない。'
+            content = 'ちょっと何言ってるか分からない。'
 
             line_bot_api.reply_message(
                 event.reply_token,
@@ -175,7 +167,6 @@ def message_text(event):
 
         # 集計処理
         if '集計' in umsg[0]:
-
             # 月取得
             now_month = '{0:%m}'.format(datetime.date.today())
             now_month2 = '{0:%m}'.format(datetime.date.today()-datetime.timedelta(days=31))
@@ -195,6 +186,7 @@ def message_text(event):
                     ]
                 )
             )
+
             line_bot_api.reply_message(
                     event.reply_token,
                     confirm_template_message
@@ -204,36 +196,26 @@ def message_text(event):
             agr_money = agr_wallet(umsg[0], conn)
             # メッセージ作成
             content = str(umsg[0]) + "分 集計しました！\n\nこー：" + str(agr_money[0]) + " (差額：" + str(agr_money[2]) + ")\nまー：" + str(agr_money[1])+ " (差額：" + str(agr_money[3]) + ")"
-
+            
             line_bot_api.reply_message(
                 event.reply_token,
                 TextSendMessage(text=content)
             )
         elif '起動' in umsg[0]:
-            
             content = '生きてます！'
-
+            
             line_bot_api.reply_message(
                 event.reply_token,
                 TextSendMessage(text=content)
             )
         else:
-            content = 'ちょっと何言ってか分からない。'
-
+            content = 'ちょっと何言ってるか分からない。'
+            
             line_bot_api.reply_message(
                 event.reply_token,
                 [TextSendMessage(text=content),
                 StickerSendMessage(package_id=1, sticker_id=113)]
             )
-    else:
-        content = 'ちょっと何言ってか分からない。'
-
-        line_bot_api.reply_message(
-            event.reply_token,
-            [TextSendMessage(text=content),
-            StickerSendMessage(package_id=1, sticker_id=113)]
-        )     
-
 
     # DB切断
     conn.close()
