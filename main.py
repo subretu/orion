@@ -171,34 +171,6 @@ def message_text(event):
                 event.reply_token,
                 TextSendMessage(text=content)
             )
-        elif 'テスト' in umsg[0]:
-            """
-            # 時間取得
-            nowtime = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
-            nowtime_bf =  nowtime-datetime.timedelta(days=1)
-            now_month = '{0:%m}'.format(datetime.datetime.strptime(nowtime, '%Y/%m/%d %H:%M:%S'))
-            now_month2 = '{0:%m}'.format(datetime.datetime.strptime(nowtime_bf, '%Y/%m/%d %H:%M:%S'))
-            confirm_template_message = TemplateSendMessage(
-                alt_text='Confirm template',
-                template=ConfirmTemplate(
-                    text='Are you sure?',
-                    actions=[
-                        MessageAction(
-                            label='postback1',
-                            text='postback text1'
-                        ),                    
-                        MessageAction(
-                            label='message',
-                            text='message text'
-                        )
-                    ]
-                )
-            )
-            line_bot_api.reply_message(
-                    event.reply_token,
-                    confirm_template_message
-            )
-        """
         else:
             content = 'ちょっと何言ってか分からない。'
 
@@ -212,17 +184,7 @@ def message_text(event):
 
         # 集計処理
         if '集計' in umsg[0]:
-            """
-            # 集計処理実行
-            agr_money = agr_wallet(umsg[1], conn)
-            # メッセージ作成
-            content = str(umsg[1]) + "分 集計しました！\n\nこー：" + str(agr_money[0]) + " (差額：" + str(agr_money[2]) + ")\nまー：" + str(agr_money[1])+ " (差額：" + str(agr_money[3]) + ")"
 
-            line_bot_api.reply_message(
-                event.reply_token,
-                TextSendMessage(text=content)
-            )
-            """
             # 時間取得
             nowtime = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
             #nowtime_bf =  nowtime-datetime.timedelta(days=1)
