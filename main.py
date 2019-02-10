@@ -162,15 +162,6 @@ def message_text(event):
                 event.reply_token,
                 TextSendMessage(text=content)
             )
-
-        elif '起動' in umsg[0]:
-            
-            content = '生きてます！'
-
-            line_bot_api.reply_message(
-                event.reply_token,
-                TextSendMessage(text=content)
-            )
         else:
             content = 'ちょっと何言ってか分からない。'
 
@@ -185,13 +176,13 @@ def message_text(event):
         # 集計処理
         if '集計' in umsg[0]:
 
-            # 時間取得
+            # 月取得
             now_month = '{0:%m}'.format(datetime.date.today())
             now_month2 = '{0:%m}'.format(datetime.date.today()-datetime.timedelta(days=31))
             confirm_template_message = TemplateSendMessage(
                 alt_text='Confirm template',
                 template=ConfirmTemplate(
-                    text='Are you sure?',
+                    text='何月の集計ですか？',
                     actions=[
                         MessageAction(
                             label=now_month2+"月",
@@ -218,7 +209,14 @@ def message_text(event):
                 event.reply_token,
                 TextSendMessage(text=content)
             )
+        elif '起動' in umsg[0]:
+            
+            content = '生きてます！'
 
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text=content)
+            )
         else:
             content = 'ちょっと何言ってか分からない。'
 
