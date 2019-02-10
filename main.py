@@ -168,20 +168,20 @@ def message_text(event):
         # 集計処理
         if '集計' in umsg[0]:
             # 月取得
-            now_month = '{0:%m}'.format(datetime.date.today())
-            now_month2 = '{0:%m}'.format(datetime.date.today()-datetime.timedelta(days=31))
+            now_month = str((datetime.date.today()).month)+"月"
+            now_month2 = str((datetime.date.today()-datetime.timedelta(days=31))).month+"月"
             confirm_template_message = TemplateSendMessage(
                 alt_text='Confirm template',
                 template=ConfirmTemplate(
                     text='何月の集計ですか？',
                     actions=[
                         MessageAction(
-                            label=now_month2+"月",
-                            text=now_month2+"月"
+                            label=now_month2
+                            text=now_month2
                         ),                    
                         MessageAction(
-                            label=now_month+"月",
-                            text=now_month+"月"
+                            label=now_month,
+                            text=now_month;
                         )
                     ]
                 )
