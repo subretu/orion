@@ -176,12 +176,12 @@ def message_text(event):
                     text='何月の集計ですか？',
                     actions=[
                         MessageAction(
-                            label=now_month2
+                            label=now_month2,
                             text=now_month2
                         ),                    
                         MessageAction(
                             label=now_month,
-                            text=now_month;
+                            text=now_month
                         )
                     ]
                 )
