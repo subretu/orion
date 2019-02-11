@@ -102,16 +102,15 @@ def agr_wallet(umsg, conn):
     month = umsg.replace('月', '')
     # 集計処理実行
     cur.execute("select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "+ month + " group by payer order by payer;")
-    res = cur.fetchall()
-    for r in res:
-        r1 = r[0]
+    r1 = cur.fetchone()
+    r2 = cur.fetchone()    
     # 定額からの差額を算出
-    kjs = 10000 - int(r1[0])
-    mrs = 10000 - int(r1[1])
+    kjs = 10000 - r1[0]
+    mrs = 10000 - r2[0]
     # カーソル切断
     cur.close()
     # 集計金額、差額を返す
-    return r1[0], r1[1], kjs, mrs
+    return r1[0], r2[0], kjs, mrs
 
 @handler.add(MessageEvent, message=TextMessage)
 def message_text(event):
