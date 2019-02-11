@@ -103,6 +103,8 @@ def agr_wallet(umsg, conn):
     # 集計処理実行
     cur.execute("select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "+ month + " group by payer order by payer;")
     r1 = cur.fetchall()
+    for r in r1:
+        r1 = r[0]
     # 定額からの差額を算出
     kjs = 10000 - r1[0]
     mrs = 10000 - r1[1]
