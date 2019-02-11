@@ -102,7 +102,7 @@ def agr_wallet(umsg, conn):
     month = umsg.replace('月', '')
     # 集計処理実行
     cur.execute("select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "+ month + " group by payer order by payer;")
-    r1 = cur.fetchone()    
+    r1 = cur.fetchall()    
     # カーソル切断
     cur.close()
     # 集計金額、定額からの差額を返す
