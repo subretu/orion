@@ -171,7 +171,7 @@ def message_text(event):
             now_month = str((datetime.date.today()).month)+"月"
             now_month2 = str((datetime.date.today()-datetime.timedelta(days=31)).month)+"月"
             confirm_template_message = TemplateSendMessage(
-                #alt_text='月別集計',
+                alt_text='月別集計',
                 template=ConfirmTemplate(
                     text='何月の集計ですか？',
                     actions=[
