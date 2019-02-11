@@ -106,8 +106,8 @@ def agr_wallet(umsg, conn):
     for r in res:
         r1 = r[0]
     # 定額からの差額を算出
-    kjs = 10000 - r1[0]
-    mrs = 10000 - r1[1]
+    kjs = 10000 - int(r1[0])
+    mrs = 10000 - int(r1[1])
     # カーソル切断
     cur.close()
     # 集計金額、差額を返す
