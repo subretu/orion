@@ -106,7 +106,7 @@ def agr_wallet(umsg, conn):
     # カーソル切断
     cur.close()
     # 集計金額、定額からの差額を返す
-    return r1[0], r1[1], 10000-r1[0], 10000-r1[1]
+    return r1[0], r1[1], 10000-int(r1[0]), 10000-int(r1[1])
 
 @handler.add(MessageEvent, message=TextMessage)
 def message_text(event):
