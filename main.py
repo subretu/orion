@@ -102,8 +102,8 @@ def agr_wallet(umsg, conn):
     month = umsg.replace('月', '')
     # 集計処理実行
     cur.execute("select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "+ month + " group by payer order by payer;")
-    r1 = cur.fetchall()
-    for r in r1:
+    res = cur.fetchall()
+    for r in res:
         r1 = r[0]
     # 定額からの差額を算出
     kjs = 10000 - r1[0]
