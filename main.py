@@ -102,12 +102,11 @@ def agr_wallet(umsg, conn):
     month = umsg.replace('月', '')
     # 集計処理実行
     cur.execute("select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "+ month + " group by payer order by payer;")
-    r1 = cur.fetchone()
-    r2 = cur.fetchone()    
+    sql_rslt = cur.fetchall() 
     # カーソル切断
     cur.close()
     # 集計金額、差額を返す
-    return r1[0], r2[0], 10000-r1[0], 10000-r2[0]
+    return sql_rslt[0][0], sql_rslt[1][0], 10000-sql_rslt[0][0], 10000-sql_rslt[1][0]
 
 @handler.add(MessageEvent, message=TextMessage)
 def message_text(event):
