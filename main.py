@@ -158,6 +158,7 @@ def message_text(event):
         # 集計処理
         if '集計' in umsg[0]:
             # 月取得
+
             #sengetu = datetime.date.today() - relativedelta(months=1)
             now_month = str((datetime.date.today()).month)+"月"
             now_month2 = str(datetime.date.today() - relativedelta(months=1))+"月"
