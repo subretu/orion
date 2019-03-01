@@ -101,12 +101,14 @@ def agr_wallet(umsg, conn):
     # 月を削除
     month = umsg.replace('月', '')
     # 集計処理実行
-    cur.execute("select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "+ month + " group by payer order by payer;")
-    sql_rslt = cur.fetchall() 
+    cur.execute("select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "+ month + " and payer = 'koji';")
+    r1 = cur.fetchone()    
+    cur.execute("select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "+ month + " and payer = 'mari';")
+    r2 = cur.fetchone()
     # カーソル切断
     cur.close()
-    # 集計金額、差額を返す
-    return sql_rslt[0][0], sql_rslt[1][0], 10000-sql_rslt[0][0], 10000-sql_rslt[1][0]
+    # 金額、差額を返す
+    return r1[0], r2[0], 10000-r1[0], 10000-r2[0]
 
 @handler.add(MessageEvent, message=TextMessage)
 def message_text(event):
@@ -156,7 +158,7 @@ def message_text(event):
         if '集計' in umsg[0]:
             # 月取得
             now_month = str((datetime.date.today()).month)+"月"
-            now_month2 = str((datetime.date.today()-datetime.timedelta(days=31)).month)+"月"
+            now_month2 = str((datetime.date.today()-datetime.timedelta(days=28)).month)+"月"
             confirm_template_message = TemplateSendMessage(
                 alt_text='月別集計',
                 template=ConfirmTemplate(
