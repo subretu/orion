@@ -158,15 +158,18 @@ def message_text(event):
         # 集計処理
         if '集計' in umsg[0]:
             # 月取得
-            #sengetu = datetime.date.today() - relativedelta(months=1)
             now_month = str((datetime.date.today()).month)+"月"
-            now_month2 = str(datetime.date.today() - relativedelta(months=1))+"月"
-            #now_month3 = str((datetime.date.today()-datetime.timedelta(days=28)).month)+"月"
+            now_month2 = str((datetime.date.today() - relativedelta(months=1)).month+"月"
+            now_month3 = str((datetime.date.today() - relativedelta(months=2)).month+"月"
             confirm_template_message = TemplateSendMessage(
                 alt_text='月別集計',
                 template=ConfirmTemplate(
                     text='何月の集計ですか？',
                     actions=[
+                        MessageAction(
+                            label=now_month3,
+                            text=now_month3
+                        ),  
                         MessageAction(
                             label=now_month2,
                             text=now_month2
