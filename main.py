@@ -111,6 +111,21 @@ def agr_wallet(umsg, conn):
     # 金額、差額を返す
     return r1[0], r2[0], 10000-r1[0], 10000-r2[0]
 
+@handler.add(PostbackEvent)
+def on_postback(event):
+    postback_msg = event.postback.data
+
+    if postback_msg == 'is_show=1':
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text='is_showオプションは1だよ！')
+        )
+    elif postback_msg == 'is_show=2':
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text='is_showオプションは2だよ！')
+        )
+
 @handler.add(MessageEvent, message=TextMessage)
 def message_text(event):
 
