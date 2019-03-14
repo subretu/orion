@@ -33,9 +33,6 @@ from linebot.models import ( # 使用するモデル(イベント, メッセー�
     MessageAction, ConfirmTemplate, PostbackAction
 )
 
-# グローバル変数定義
-payman = ""
-
 app = Flask(__name__)
 
 # get channel_secret and channel_access_token from your environment variable
@@ -119,18 +116,22 @@ def on_postback(event):
     postback_msg = event.postback.data
 
     if postback_msg == 'is_show=1':
-        payman = "koji"
+        StorePayer.pname = "koji"
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text='支払額はいくらですか？')
         )
     elif postback_msg == 'is_show=2':
-        payman = "mari"
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text='支払額はいくらですか？')
         )
 
+# 支払者名保存クラス
+class StorePayer():
+    pname = ""
+    def __init__(self,name):
+        self.name = name
 
 @handler.add(MessageEvent, message=TextMessage)
 def message_text(event):
@@ -244,8 +245,8 @@ def message_text(event):
             )
         else:
             #content = 'ちょっと何言ってるか分からない。'
-            content = payman
-            
+            content = StorePayer.pname
+                        
             line_bot_api.reply_message(
                 event.reply_token,
                 [TextSendMessage(text=content),
@@ -254,7 +255,7 @@ def message_text(event):
 
     # DB切断
     conn.close()
-    
+
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
