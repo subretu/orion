@@ -122,6 +122,7 @@ def on_postback(event):
             TextSendMessage(text='支払額はいくらですか？')
         )
     elif postback_msg == 'is_show=2':
+        StorePayer.pname = "mari"
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text='支払額はいくらですか？')
@@ -130,8 +131,6 @@ def on_postback(event):
 # 支払者名保存クラス
 class StorePayer():
     pname = ""
-    def __init__(self,name):
-        self.name = name
 
 @handler.add(MessageEvent, message=TextMessage)
 def message_text(event):
