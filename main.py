@@ -201,16 +201,16 @@ def message_text(event):
         #■■追加
         elif '試し' in umsg[0]:
 
-            message_template = ButtonsTemplate(
+            message_template = TemplateSendMessage(
                 alt_text='テスト',
                 template=ConfirmTemplate(
                     text='テストですか？',
                     actions=[ 
-                        MessageAction(
+                        PostbackTemplateAction(
                             label='ON',
                             data='is_show=1'
                         ),                    
-                        MessageAction(
+                        PostbackTemplateAction(
                             label='OFF',
                             data='is_show=2'
                         )
