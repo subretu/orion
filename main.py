@@ -118,14 +118,14 @@ def on_postback(event):
     if postback_msg == 'is_show=1':
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text='is_showオプションは1だよ！')
+            TextSendMessage(text='支払額はいくらですか？')
         )
     elif postback_msg == 'is_show=2':
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text='is_showオプションは2だよ！')
+            TextSendMessage(text='支払額はいくらですか？')
         )
-        
+
 
 @handler.add(MessageEvent, message=TextMessage)
 def message_text(event):
@@ -218,16 +218,16 @@ def message_text(event):
         elif '試し' in umsg[0]:
 
             message_template = TemplateSendMessage(
-                alt_text='テスト',
+                alt_text='支払者区別',
                 template=ConfirmTemplate(
-                    text='テストですか？',
+                    text='支払者は誰ですか？',
                     actions=[ 
                         PostbackTemplateAction(
-                            label='ON',
+                            label='こうじ',
                             data='is_show=1'
                         ),                    
                         PostbackTemplateAction(
-                            label='OFF',
+                            label='まり',
                             data='is_show=2'
                         )
                     ]
