@@ -254,6 +254,7 @@ def message_text(event):
 
     # DB切断
     conn.close()
+    
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
