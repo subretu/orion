@@ -125,6 +125,7 @@ def on_postback(event):
             event.reply_token,
             TextSendMessage(text='is_showオプションは2だよ！')
         )
+        
 
 @handler.add(MessageEvent, message=TextMessage)
 def message_text(event):
