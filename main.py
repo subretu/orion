@@ -198,6 +198,26 @@ def message_text(event):
                 event.reply_token,
                 TextSendMessage(text=content)
             )
+        #■■追加
+        elif '試し' in umsg[0]:
+
+            message_template = ButtonsTemplate(
+                text='BTC_JPYの通知',
+                actions=[
+                    PostbackTemplateAction(
+                        label='ON',
+                        data='is_show=1'
+                    ),
+                    PostbackTemplateAction(
+                        label='OFF',
+                        data='is_show=0'
+                    )
+                ]
+            )
+            line_bot_api.reply_message(
+                    event.reply_token,
+                    message_template
+            )
         else:
             content = 'ちょっと何言ってるか分からない。'
             
