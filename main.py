@@ -220,7 +220,7 @@ def message_text(event):
                 TextSendMessage(text=content)
             )
         #■■追加
-        elif '試し' in umsg[0]:
+        elif '登録' in umsg[0]:
 
             message_template = TemplateSendMessage(
                 alt_text='支払者区別',
