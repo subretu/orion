@@ -146,6 +146,7 @@ def on_postback(event):
             TextSendMessage(text='支払額はいくらですか？')
         )
 
+
 # 支払者名保存クラス
 class StorePayer():
     pname = ""
