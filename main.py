@@ -197,7 +197,6 @@ def message_text(event):
             )
         else:
             content = 'ちょっと何言ってるか分からない。'
-
             line_bot_api.reply_message(
                 event.reply_token,
                 [TextSendMessage(text=content),
@@ -283,9 +282,7 @@ def message_text(event):
                     message_template
             )
         else:
-            #content = 'ちょっと何言ってるか分からない。'
-            content = StorePayer.pname
-                        
+            content = 'ちょっと何言ってるか分からない。'            
             line_bot_api.reply_message(
                 event.reply_token,
                 [TextSendMessage(text=content),
