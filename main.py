@@ -75,7 +75,7 @@ def get_connection():
     con = psycopg2.connect("host=" + server + " port=" + port + " dbname=" + db + " user=" + user + " password=" + pwd)
     return con
 
-# 支払額登録関数
+# 支払額登録関数1
 def inst_wallet(umsg, nowtime, conn):
     # カーソル作成
     cur = conn.cursor()
@@ -84,6 +84,24 @@ def inst_wallet(umsg, nowtime, conn):
     # 金額合計
     total = 0
     for n in umsg[2:len(umsg)]:
+        total = total + int(n)
+    # 登録処理実行
+    cur.execute("BEGIN;insert into wallet (opstime,payer,money) values ('"+nowtime+"','"+usr+"',"+str(total)+");COMMIT;")
+    now_month = '{0:%m}'.format(datetime.datetime.strptime(nowtime, '%Y/%m/%d %H:%M:%S'))
+    # 集計関数呼び出し
+    agr_money = agr_wallet(now_month+"月", conn)
+    # カーソル切断
+    cur.close()
+    # 金額を返す
+    return agr_money
+    
+# 支払額登録関数2
+def inst_wallet2(umsg, nowtime, usr, conn):
+    # カーソル作成
+    cur = conn.cursor()
+    # 金額合計
+    total = 0
+    for n in umsg[0:len(umsg)]:
         total = total + int(n)
     # 登録処理実行
     cur.execute("BEGIN;insert into wallet (opstime,payer,money) values ('"+nowtime+"','"+usr+"',"+str(total)+");COMMIT;")
@@ -165,6 +183,18 @@ def message_text(event):
                 event.reply_token,
                 TextSendMessage(text=content)
             )
+        # 支払金額のDB登録＋集計処理(リッチメニュー)
+        elif umsg[0].isnumeric():
+            # 時間取得
+            nowtime = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+            # 支払金額登録処理+集計処理実行
+            agr_money = inst_wallet2(umsg,nowtime,StorePayer.pname,conn)
+            content = "金額の登録が完了したよ！\n\n【現在までの集計】\n"+'{0:%m}'.format(datetime.datetime.strptime(nowtime, '%Y/%m/%d %H:%M:%S'))+"月分\nこー：" + str(agr_money[0]) + " (差額：" + str(agr_money[2]) + ")\nまー：" + str(agr_money[1])+ " (差額：" + str(agr_money[3]) + ")"
+
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text=content)
+            )
         else:
             content = 'ちょっと何言ってるか分からない。'
 
@@ -182,7 +212,7 @@ def message_text(event):
             now_month = str((datetime.date.today()).month)+"月"
             now_month2 = str((datetime.date.today() - relativedelta(months=1)).month)+"月"
             confirm_template_message = TemplateSendMessage(
-                alt_text='月別集計',
+                alt_text='何月の集計ですか？',
                 template=ConfirmTemplate(
                     text='何月の集計ですか？',
                     actions=[ 
@@ -212,6 +242,17 @@ def message_text(event):
                 event.reply_token,
                 TextSendMessage(text=content)
             )
+        elif umsg[0].isnumeric():
+            # 時間取得
+            nowtime = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+            # 支払金額登録処理+集計処理実行
+            agr_money = inst_wallet2(umsg,nowtime,StorePayer.pname,conn)
+            content = "金額の登録が完了したよ！\n\n【現在までの集計】\n"+'{0:%m}'.format(datetime.datetime.strptime(nowtime, '%Y/%m/%d %H:%M:%S'))+"月分\nこー：" + str(agr_money[0]) + " (差額：" + str(agr_money[2]) + ")\nまー：" + str(agr_money[1])+ " (差額：" + str(agr_money[3]) + ")"
+
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(text=content)
+            )
         elif '起動' in umsg[0]:
             content = '生きてます！'
             
@@ -219,11 +260,10 @@ def message_text(event):
                 event.reply_token,
                 TextSendMessage(text=content)
             )
-        #■■追加
         elif '登録' in umsg[0]:
 
             message_template = TemplateSendMessage(
-                alt_text='支払者区別',
+                alt_text='支払者は誰ですか？',
                 template=ConfirmTemplate(
                     text='支払者は誰ですか？',
                     actions=[ 
