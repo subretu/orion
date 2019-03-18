@@ -148,7 +148,7 @@ def on_postback(event):
 
 # 支払者名保存クラス
 class StorePayer():
-    pname = ""
+    pname = None
 
 @handler.add(MessageEvent, message=TextMessage)
 def message_text(event):
@@ -184,13 +184,13 @@ def message_text(event):
                 TextSendMessage(text=content)
             )
         # 支払金額のDB登録＋集計処理(リッチメニュー)
-        elif umsg[0].isnumeric() and StorePayer.pname is not "":
+        elif (umsg[0].isnumeric()) and (StorePayer.pname is not None):
             # 時間取得
             nowtime = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
             # 支払金額登録処理+集計処理実行
             agr_money = inst_wallet2(umsg,nowtime,StorePayer.pname,conn)
             content = "金額の登録が完了したよ！\n\n【現在までの集計】\n"+'{0:%m}'.format(datetime.datetime.strptime(nowtime, '%Y/%m/%d %H:%M:%S'))+"月分\nこー：" + str(agr_money[0]) + " (差額：" + str(agr_money[2]) + ")\nまー：" + str(agr_money[1])+ " (差額：" + str(agr_money[3]) + ")"
-            StorePayer.pname = ""
+            StorePayer.pname = None
             line_bot_api.reply_message(
                 event.reply_token,
                 TextSendMessage(text=content)
@@ -242,13 +242,13 @@ def message_text(event):
                 event.reply_token,
                 TextSendMessage(text=content)
             )
-        elif umsg[0].isnumeric() and StorePayer.pname is not "":
+        elif (umsg[0].isnumeric()) and (StorePayer.pname is not None):
             # 時間取得
             nowtime = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
             # 支払金額登録処理+集計処理実行
             agr_money = inst_wallet2(umsg,nowtime,StorePayer.pname,conn)
             content = "金額の登録が完了したよ！\n\n【現在までの集計】\n"+'{0:%m}'.format(datetime.datetime.strptime(nowtime, '%Y/%m/%d %H:%M:%S'))+"月分\nこー：" + str(agr_money[0]) + " (差額：" + str(agr_money[2]) + ")\nまー：" + str(agr_money[1])+ " (差額：" + str(agr_money[3]) + ")"
-            StorePayer.pname = ""
+            StorePayer.pname = None
             line_bot_api.reply_message(
                 event.reply_token,
                 TextSendMessage(text=content)
