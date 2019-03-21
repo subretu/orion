@@ -133,17 +133,17 @@ def agr_wallet(umsg, conn):
 def on_postback(event):
     postback_msg = event.postback.data
 
-    if postback_msg == 'is_show=1':
+    if postback_msg == 'payer=1':
         StorePayer.pname = "koji"
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text=StorePayer.pname+'さんの支払額はいくらですか？')
+            TextSendMessage(text='こうじさんの支払額はいくらですか？')
         )
-    elif postback_msg == 'is_show=2':
+    elif postback_msg == 'payer=2':
         StorePayer.pname = "mari"
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text=StorePayer.pname+'さんの支払額はいくらですか？')
+            TextSendMessage(text='まりさんの支払額はいくらですか？')
         )
 
 # 支払者名保存クラス
@@ -268,11 +268,11 @@ def message_text(event):
                     actions=[ 
                         PostbackTemplateAction(
                             label='こうじ',
-                            data='is_show=1'
+                            data='payer=1'
                         ),                    
                         PostbackTemplateAction(
                             label='まり',
-                            data='is_show=2'
+                            data='payer=2'
                         )
                     ]
                 )
