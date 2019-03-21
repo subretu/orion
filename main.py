@@ -137,13 +137,13 @@ def on_postback(event):
         StorePayer.pname = "koji"
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text='支払額はいくらですか？')
+            TextSendMessage(text=StorePayer.pname+'さんの支払額はいくらですか？')
         )
     elif postback_msg == 'is_show=2':
         StorePayer.pname = "mari"
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text='支払額はいくらですか？')
+            TextSendMessage(text=StorePayer.pname+'さんの支払額はいくらですか？')
         )
 
 # 支払者名保存クラス
