@@ -289,7 +289,7 @@ def message_text(event):
                 StickerSendMessage(package_id=1, sticker_id=113)]
             )
 
-    # DB切断
+    # DBの切断
     conn.close()
 
 
