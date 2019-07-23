@@ -147,11 +147,11 @@ def agr_wallet_year(umsg_year, umsg_month, conn):
     # 集計処理実行
     cur.execute(
         "select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "
-        + month + "and where date_part('year',opstime) = " + umsg_year + " and payer = 'koji';")
+        + month + " and where date_part('year',opstime) = " + umsg_year + " and payer = 'koji';")
     r1 = cur.fetchone()
     cur.execute(
         "select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "
-        + month + "and where date_part('year',opstime) = " + umsg_year + " and payer = 'mari';")
+        + month + " and where date_part('year',opstime) = " + umsg_year + " and payer = 'mari';")
     r2 = cur.fetchone()
     # カーソル切断
     cur.close()
