@@ -196,7 +196,7 @@ def message_text(event):
                 agr_money = agr_wallet(umsg[1], conn)
             else:
                 # 集計処理実行
-                agr_money = agr_wallet_year(umsg[0], umsg[1], conn)
+                agr_money = agr_wallet_year(umsg[1], umsg[2], conn)
 
             # メッセージ作成
             content = str(umsg[1]) + "分 集計しました！\n\nこー：" + str(
