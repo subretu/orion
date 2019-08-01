@@ -118,7 +118,7 @@ def inst_wallet2(umsg, nowtime, usr, conn):
     return agr_money
 
 
-# 集計関数(今年度)
+# 集計関数(簡易メニュー、登録時の時のみ)
 def agr_wallet(umsg, conn):
     # カーソル作成
     cur = conn.cursor()
@@ -138,20 +138,23 @@ def agr_wallet(umsg, conn):
     # 金額、差額を返す
     return r1[0], r2[0], 10000 - r1[0], 10000 - r2[0]
 
-# 集計関数(年付き)
+# 集計関数(年付きコマンド時のみ)
+
+
 def agr_wallet_year(umsg_year, umsg_month, conn):
     # カーソル作成
     cur = conn.cursor()
-    # 月を削除
+    # 年、月を削除
     month = umsg_month.replace('月', '')
+    year = umsg_year.replace('年', '')
     # 集計処理実行
     cur.execute(
         "select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "
-        + month + " and date_part('year',opstime) = " + umsg_year + " and payer = 'koji';")
+        + month + " and date_part('year',opstime) = " + year + " and payer = 'koji';")
     r1 = cur.fetchone()
     cur.execute(
         "select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "
-        + month + " and date_part('year',opstime) = " + umsg_year + " and payer = 'mari';")
+        + month + " and date_part('year',opstime) = " + year + " and payer = 'mari';")
     r2 = cur.fetchone()
     # カーソル切断
     cur.close()
@@ -194,12 +197,14 @@ def message_text(event):
             if len(umsg) == 2:
                 # 集計処理実行
                 agr_money = agr_wallet(umsg[1], conn)
+                msg_month = str(umsg[1])
             else:
                 # 集計処理実行
                 agr_money = agr_wallet_year(umsg[1], umsg[2], conn)
+                msg_month = str(umsg[1]) + " " + str(umsg[2])
 
             # メッセージ作成
-            content = str(umsg[1]) + "分 集計しました！\n\nこー：" + str(
+            content = msg_month + "分 集計しました！\n\nこー：" + str(
                 agr_money[0]) + " (差額：" + str(agr_money[2]) + ")\nまー：" + str(
                     agr_money[1]) + " (差額：" + str(agr_money[3]) + ")"
 
