@@ -232,7 +232,7 @@ def message_text(event):
             # 時間取得
             nowtime = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
             # 集計クラスのインスタンス作成
-            agr_wal = Aggregate_wallet(umsg, conn)
+            agr_wal = Aggregate_wallet(umsg[0], conn)
             # 支払金額登録処理+集計処理実行
             agr_money = insert_wallet(umsg, nowtime, StorePayer.pname, conn, agr_wal)
             content = "金額の登録が完了したよ！\n\n【現在までの集計】\n" + '{0:%m}'.format(
