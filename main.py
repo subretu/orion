@@ -217,7 +217,7 @@ def message_text(event):
                                        confirm_template_message)
         elif '月' in umsg[0]:
             # 集計クラスのインスタンス作成
-            agr_wal = Aggregate_wallet(umsg, conn)
+            agr_wal = Aggregate_wallet(umsg[0], conn)
             # 集計処理実行
             agr_money = agr_wal.no_assign_year()
             # メッセージ作成
