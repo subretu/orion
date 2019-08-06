@@ -96,20 +96,20 @@ class Aggregate_wallet():
     def __init__(self, set_umsg, set_conn):
         self.umsg = set_umsg
         self.conn = set_conn
+        self.now_year = datetime.datetime.now().year
+        self.now_month = datetime.datetime.now().month
 
     def no_assign_year(self):
         # カーソル作成
         cur = self.conn.cursor()
-        # 月を削除
-        month = self.umsg.replace('月', '')
         # 集計処理実行
         cur.execute(
             "select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "
-            + month + " and payer = 'koji';")
+            + self.now_month + " and date_part('year',opstime) = " + self.now_year + " and payer = 'koji';")
         r1 = cur.fetchone()
         cur.execute(
             "select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "
-            + month + " and payer = 'mari';")
+            + self.now_month + " and date_part('year',opstime) = " + self.now_year + " and payer = 'mari';")
         r2 = cur.fetchone()
         # カーソル切断
         cur.close()
