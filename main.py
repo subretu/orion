@@ -96,8 +96,8 @@ class Aggregate_wallet():
     def __init__(self, set_umsg, set_conn):
         self.umsg = set_umsg
         self.conn = set_conn
-        self.now_year = datetime.datetime.now().year
-        self.now_month = datetime.datetime.now().month
+        self.now_year = str(datetime.datetime.now().year)
+        self.now_month = str(datetime.datetime.now().month)
 
     def no_assign_year(self):
         # カーソル作成
