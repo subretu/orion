@@ -139,17 +139,9 @@ class AggregateWallet():
 
 @handler.add(PostbackEvent)
 def on_postback(event):
-    postback_msg = event.postback.data
-
-    if postback_msg == 'payer=1':
-        StorePayer.pname_id = 1
-        line_bot_api.reply_message(event.reply_token,
-                                   TextSendMessage(text='こうじさんの支払額はいくらですか？'))
-    elif postback_msg == 'payer=2':
-        StorePayer.pname_id = 2
-        line_bot_api.reply_message(event.reply_token,
-                                   TextSendMessage(text='まりさんの支払額はいくらですか？'))
-
+    StorePayer.pname_id = event.postback.data
+    line_bot_api.reply_message(event.reply_token,
+                                TextSendMessage(text=event.postback.name + 'の支払額はいくらですか？'))
 
 # 支払者クラス
 class StorePayer():
@@ -268,8 +260,8 @@ def message_text(event):
                 template=ConfirmTemplate(
                     text='支払者は誰ですか？',
                     actions=[
-                        PostbackTemplateAction(label=payer.getname(1), data='payer=1'),
-                        PostbackTemplateAction(label=payer.getname(2), data='payer=2')
+                        PostbackTemplateAction(label=payer.getname(1), name=payer.getname(1), data=1),
+                        PostbackTemplateAction(label=payer.getname(2), name=payer.getname(2), data=2)
                     ]))
             line_bot_api.reply_message(event.reply_token, message_template)
 
