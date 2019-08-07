@@ -166,7 +166,7 @@ class StorePayer():
         r1 = cur.fetchone()
         # カーソル切断
         cur.close()
-        return r1
+        return r1[0]
 
 @handler.add(MessageEvent, message=TextMessage)
 def message_text(event):
@@ -235,7 +235,7 @@ def message_text(event):
             # 集計処理実行
             agr_money = agr_wal.no_assign_year()
             # メッセージ作成
-            content = str(umsg[0]) + "分 集計しました！\n\n" + payer.getname(1) +"：" + str(
+            content = str(umsg[0]) + "分 集計しました！\n\n" + payer.getname(1) + "：" + str(
                 agr_money[0]) + " (差額：" + str(agr_money[2]) + ")\n" + payer.getname(2) + "：" + str(
                     agr_money[1]) + " (差額：" + str(agr_money[3]) + ")"
 
