@@ -162,7 +162,7 @@ class StorePayer():
     def getname(self, user_id):
         # カーソル作成
         cur = self.conn.cursor()
-        cur.execute("select * from name where id = " + str(user_id) + ";")
+        cur.execute("select name from payer where id = " + str(user_id) + ";")
         r1 = cur.fetchone()
         # カーソル切断
         cur.close()
@@ -174,7 +174,7 @@ def message_text(event):
     # DBコネクション作成
     conn = get_connection()
     # 支払者クラスのインスタンス作成＋支払者名取得
-    payer = StorePayer(conn)    
+    payer = StorePayer(conn)
     # 受信メッセージを分割
     umsg = event.message.text.split()
 
