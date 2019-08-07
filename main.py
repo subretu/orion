@@ -73,7 +73,7 @@ def get_connection():
     return con
 
 # 支払額登録関数
-def insert_wallet(umsg, nowtime, usr, conn, agr_wal):
+def insert_wallet(umsg, nowtime, user_id, conn, agr_wal):
     # カーソル作成
     cur = conn.cursor()
     # 金額合計
@@ -81,8 +81,8 @@ def insert_wallet(umsg, nowtime, usr, conn, agr_wal):
     for n in umsg[0:len(umsg)]:
         total = total + int(n)
     # 登録処理実行
-    cur.execute("BEGIN;insert into wallet (opstime,payer,money) values ('" +
-                nowtime + "','" + usr + "'," + str(total) + ");COMMIT;")
+    cur.execute("BEGIN;insert into wallet (opstime,payer_id,money) values ('" +
+                nowtime + "'," + str(user_id) + "," + str(total) + ");COMMIT;")
     # 集計関数呼び出し
     agr_money = agr_wal.no_assign_year()
     # カーソル切断
@@ -91,7 +91,7 @@ def insert_wallet(umsg, nowtime, usr, conn, agr_wal):
     return agr_money
 
 # 集計クラス
-class Aggregate_wallet():
+class AggregateWallet():
 
     def __init__(self, set_umsg, set_conn):
         self.umsg = set_umsg
@@ -105,11 +105,11 @@ class Aggregate_wallet():
         # 集計処理実行
         cur.execute(
             "select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "
-            + self.now_month + " and date_part('year',opstime) = " + self.now_year + " and payer = 'koji';")
+            + self.now_month + " and date_part('year',opstime) = " + self.now_year + " and payer_id = 1;")
         r1 = cur.fetchone()
         cur.execute(
             "select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "
-            + self.now_month + " and date_part('year',opstime) = " + self.now_year + " and payer = 'mari';")
+            + self.now_month + " and date_part('year',opstime) = " + self.now_year + " and payer_id = 2;")
         r2 = cur.fetchone()
         # カーソル切断
         cur.close()
@@ -125,11 +125,11 @@ class Aggregate_wallet():
         # 集計処理実行
         cur.execute(
             "select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "
-            + month + " and date_part('year',opstime) = " + year + " and payer = 'koji';")
+            + month + " and date_part('year',opstime) = " + year + " and payer = 1;")
         r1 = cur.fetchone()
         cur.execute(
             "select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "
-            + month + " and date_part('year',opstime) = " + year + " and payer = 'mari';")
+            + month + " and date_part('year',opstime) = " + year + " and payer = 2;")
         r2 = cur.fetchone()
         # カーソル切断
         cur.close()
@@ -142,32 +142,46 @@ def on_postback(event):
     postback_msg = event.postback.data
 
     if postback_msg == 'payer=1':
-        StorePayer.pname = "koji"
+        StorePayer.pname_id = 1
         line_bot_api.reply_message(event.reply_token,
                                    TextSendMessage(text='こうじさんの支払額はいくらですか？'))
     elif postback_msg == 'payer=2':
-        StorePayer.pname = "mari"
+        StorePayer.pname_id = 2
         line_bot_api.reply_message(event.reply_token,
                                    TextSendMessage(text='まりさんの支払額はいくらですか？'))
 
 
-# 支払者名保存クラス
+# 支払者クラス
 class StorePayer():
-    pname = None
+    # クラス変数にて支払者IDを保存
+    pname_id = None
 
+    def __init__(self, set_conn):
+        self.conn = set_conn
+    
+    def getname(self, user_id):
+        # カーソル作成
+        cur = self.conn.cursor()
+        cur.execute("select * from name where id = " + str(user_id) + ";")
+        r1 = cur.fetchone()
+        # カーソル切断
+        cur.close()
+        return r1
 
 @handler.add(MessageEvent, message=TextMessage)
 def message_text(event):
 
     # DBコネクション作成
     conn = get_connection()
+    # 支払者クラスのインスタンス作成＋支払者名取得
+    payer = StorePayer(conn)    
     # 受信メッセージを分割
     umsg = event.message.text.split()
 
     if len(umsg) > 1:
 
         # 集計クラスのインスタンス作成
-        agr_wal = Aggregate_wallet(umsg, conn)
+        agr_wal = AggregateWallet(umsg, conn)
 
         # 集計処理
         if '集計' in umsg[0]:
@@ -217,30 +231,30 @@ def message_text(event):
                                        confirm_template_message)
         elif '月' in umsg[0]:
             # 集計クラスのインスタンス作成
-            agr_wal = Aggregate_wallet(umsg[0], conn)
+            agr_wal = AggregateWallet(umsg[0], conn)
             # 集計処理実行
             agr_money = agr_wal.no_assign_year()
             # メッセージ作成
-            content = str(umsg[0]) + "分 集計しました！\n\nこー：" + str(
-                agr_money[0]) + " (差額：" + str(agr_money[2]) + ")\nまー：" + str(
+            content = str(umsg[0]) + "分 集計しました！\n\n" + payer.getname(1) +"：" + str(
+                agr_money[0]) + " (差額：" + str(agr_money[2]) + ")\n" + payer.getname(2) + "：" + str(
                     agr_money[1]) + " (差額：" + str(agr_money[3]) + ")"
 
             line_bot_api.reply_message(event.reply_token,
                                        TextSendMessage(text=content))
 
-        elif (umsg[0].isnumeric()) and (StorePayer.pname is not None):
+        elif (umsg[0].isnumeric()) and (StorePayer.pname_id is not None):
             # 時間取得
             nowtime = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
             # 集計クラスのインスタンス作成
-            agr_wal = Aggregate_wallet(umsg[0], conn)
+            agr_wal = AggregateWallet(umsg[0], conn)
             # 支払金額登録処理+集計処理実行
-            agr_money = insert_wallet(umsg, nowtime, StorePayer.pname, conn, agr_wal)
+            agr_money = insert_wallet(umsg, nowtime, StorePayer.pname_id, conn, agr_wal)
             content = "金額の登録が完了したよ！\n\n【現在までの集計】\n" + '{0:%m}'.format(
                 datetime.datetime.strptime(nowtime, '%Y/%m/%d %H:%M:%S')
-            ) + "月分\nこー：" + str(agr_money[0]) + " (差額：" + str(
-                agr_money[2]) + ")\nまー：" + str(agr_money[1]) + " (差額：" + str(
+            ) + "月分\n" + payer.getname(1) + "：" + str(agr_money[0]) + " (差額：" + str(
+                agr_money[2]) + ")\n" + payer.getname(2) +"：" + str(agr_money[1]) + " (差額：" + str(
                     agr_money[3]) + ")"
-            StorePayer.pname = None
+            StorePayer.pname_id = None
             line_bot_api.reply_message(event.reply_token,
                                        TextSendMessage(text=content))
 
@@ -254,8 +268,8 @@ def message_text(event):
                 template=ConfirmTemplate(
                     text='支払者は誰ですか？',
                     actions=[
-                        PostbackTemplateAction(label='こうじ', data='payer=1'),
-                        PostbackTemplateAction(label='まり', data='payer=2')
+                        PostbackTemplateAction(label=payer.getname(1), data='payer=1'),
+                        PostbackTemplateAction(label=payer.getname(2), data='payer=2')
                     ]))
             line_bot_api.reply_message(event.reply_token, message_template)
 
@@ -272,3 +286,5 @@ def message_text(event):
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+    # 支払者クラスのインスタンス作成＋支払者名取得
+    payer = StorePayer(conn)
