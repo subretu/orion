@@ -136,14 +136,6 @@ class AggregateWallet():
         # 金額、差額を返す
         return r1[0], r2[0], 10000 - r1[0], 10000 - r2[0]
 
-
-@handler.add(PostbackEvent)
-def on_postback(event):
-    postback_data = event.postback.data.split(":")
-    StorePayer.pname_id = postback_data[1]
-    line_bot_api.reply_message(event.reply_token,
-                                TextSendMessage(text=postback_data[0] + 'の支払額はいくらですか？'))
-
 # 支払者クラス
 class StorePayer():
     # クラス変数にて支払者IDを保存
@@ -151,7 +143,7 @@ class StorePayer():
 
     def __init__(self, set_conn):
         self.conn = set_conn
-    
+
     def getname(self, user_id):
         # カーソル作成
         cur = self.conn.cursor()
@@ -160,6 +152,15 @@ class StorePayer():
         # カーソル切断
         cur.close()
         return r1[0]
+
+
+@handler.add(PostbackEvent)
+def on_postback(event):
+    postback_data = event.postback.data.split(":")
+    StorePayer.pname_id = postback_data[1]
+    line_bot_api.reply_message(event.reply_token,
+                               TextSendMessage(text=postback_data[0] + 'の支払額はいくらですか？'))
+
 
 @handler.add(MessageEvent, message=TextMessage)
 def message_text(event):
@@ -179,18 +180,13 @@ def message_text(event):
         # 集計処理
         if '集計' in umsg[0]:
 
-            if len(umsg) == 2:
-                # 集計処理実行
-                agr_money = agr_wal.no_assign_year()
-                msg_month = str(umsg[1])
-            else:
-                # 集計処理実行
-                agr_money = agr_wal.assign_year()
-                msg_month = str(umsg[1]) + " " + str(umsg[2])
+            # 集計処理実行
+            agr_money = agr_wal.assign_year()
+            msg_month = str(umsg[1]) + " " + str(umsg[2])
 
             # メッセージ作成
-            content = msg_month + "分 集計しました！\n\nこー：" + str(
-                agr_money[0]) + " (差額：" + str(agr_money[2]) + ")\nまー：" + str(
+            content = msg_month + "分 集計しました！\n\n" + payer.getname(1) + "：" + str(
+                agr_money[0]) + " (差額：" + str(agr_money[2]) + ")\n" + payer.getname(2) + "：" + str(
                     agr_money[1]) + " (差額：" + str(agr_money[3]) + ")"
 
             line_bot_api.reply_message(event.reply_token,
@@ -241,11 +237,12 @@ def message_text(event):
             # 集計クラスのインスタンス作成
             agr_wal = AggregateWallet(umsg[0], conn)
             # 支払金額登録処理+集計処理実行
-            agr_money = insert_wallet(umsg, nowtime, StorePayer.pname_id, conn, agr_wal)
+            agr_money = insert_wallet(
+                umsg, nowtime, StorePayer.pname_id, conn, agr_wal)
             content = "金額の登録が完了したよ！\n\n【現在までの集計】\n" + '{0:%m}'.format(
                 datetime.datetime.strptime(nowtime, '%Y/%m/%d %H:%M:%S')
             ) + "月分\n" + payer.getname(1) + "：" + str(agr_money[0]) + " (差額：" + str(
-                agr_money[2]) + ")\n" + payer.getname(2) +"：" + str(agr_money[1]) + " (差額：" + str(
+                agr_money[2]) + ")\n" + payer.getname(2) + "：" + str(agr_money[1]) + " (差額：" + str(
                     agr_money[3]) + ")"
             StorePayer.pname_id = None
             line_bot_api.reply_message(event.reply_token,
@@ -261,8 +258,10 @@ def message_text(event):
                 template=ConfirmTemplate(
                     text='支払者は誰ですか？',
                     actions=[
-                        PostbackTemplateAction(label=payer.getname(1), data=payer.getname(1) + ":1"),
-                        PostbackTemplateAction(label=payer.getname(2), data=payer.getname(2) + ":2")
+                        PostbackTemplateAction(label=payer.getname(
+                            1), data=payer.getname(1) + ":1"),
+                        PostbackTemplateAction(label=payer.getname(
+                            2), data=payer.getname(2) + ":2")
                     ]))
             line_bot_api.reply_message(event.reply_token, message_template)
 
