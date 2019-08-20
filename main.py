@@ -192,8 +192,8 @@ def message_text(event):
             line_bot_api.reply_message(event.reply_token,
                                        TextSendMessage(text=content))
 
-        elif (umsg[0].isnumeric()) and (StorePayer.pname is not None):
-            # 時間取得
+        elif (umsg[0].isnumeric()) and (StorePayer.pname_id is not None):
+            # 時間取得StorePayer
             nowtime = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
             # 集計クラスのインスタンス作成
             agr_wal = AggregateWallet(umsg, conn)
