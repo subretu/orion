@@ -192,6 +192,23 @@ def message_text(event):
             line_bot_api.reply_message(event.reply_token,
                                        TextSendMessage(text=content))
 
+        elif (umsg[0].isnumeric()) and (StorePayer.pname is not None):
+            # 時間取得
+            nowtime = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+            # 集計クラスのインスタンス作成
+            agr_wal = AggregateWallet(umsg, conn)
+            # 支払金額登録処理+集計処理実行
+            agr_money = insert_wallet(
+                umsg, nowtime, StorePayer.pname_id, conn, agr_wal)
+            content = "金額の登録が完了したよ！\n\n【現在までの集計】\n" + '{0:%m}'.format(
+                datetime.datetime.strptime(nowtime, '%Y/%m/%d %H:%M:%S')
+            ) + "月分\n" + payer.getname(1) + "：" + str(agr_money[0]) + " (差額：" + str(
+                agr_money[2]) + ")\n" + payer.getname(2) + "：" + str(agr_money[1]) + " (差額：" + str(
+                    agr_money[3]) + ")"
+            StorePayer.pname_id = None
+            line_bot_api.reply_message(event.reply_token,
+                                       TextSendMessage(text=content))
+
         else:
             line_bot_api.reply_message(event.reply_token, [
                 TextSendMessage(text='ちょっと何言ってるか分からない。'),
