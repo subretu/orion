@@ -102,14 +102,17 @@ class AggregateWallet():
     def no_assign_year(self):
         # カーソル作成
         cur = self.conn.cursor()
+        # 年、月を削除
+        month = self.umsg[1].replace('月', '')
+        year = self.umsg[0].replace('年', '')
         # 集計処理実行
         cur.execute(
             "select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "
-            + self.now_month + " and date_part('year',opstime) = " + self.now_year + " and payer_id = 1;")
+            + month + " and date_part('year',opstime) = " + year + " and payer_id = 1;")
         r1 = cur.fetchone()
         cur.execute(
             "select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "
-            + self.now_month + " and date_part('year',opstime) = " + self.now_year + " and payer_id = 2;")
+            + month + " and date_part('year',opstime) = " + year + " and payer_id = 2;")
         r2 = cur.fetchone()
         # カーソル切断
         cur.close()
@@ -172,7 +175,7 @@ def message_text(event):
     # 受信メッセージを分割
     umsg = event.message.text.split()
 
-    if len(umsg) > 1:
+    if len(umsg) > 2:
 
         # 集計クラスのインスタンス作成
         agr_wal = AggregateWallet(umsg, conn)
@@ -215,33 +218,37 @@ def message_text(event):
                 StickerSendMessage(package_id=1, sticker_id=113)
             ])
 
-    elif len(umsg) == 1:
+    elif len(umsg) >= 1:
 
         # 集計処理
         if '集計' in umsg[0]:
             # 月取得
             now_month = str((datetime.date.today()).month) + "月"
+            now_year = str((datetime.datetime.now()).year) + "年"
             now_month2 = str(
                 (datetime.date.today() - relativedelta(months=1)).month) + "月"
+            now_year2 = str(
+                (datetime.date.today() - relativedelta(months=1)).year) + "年"
             confirm_template_message = TemplateSendMessage(
                 alt_text='何月の集計ですか？',
                 template=ConfirmTemplate(text='何月の集計ですか？',
                                          actions=[
                                              MessageAction(label=now_month2,
-                                                           text=now_month2),
+                                                           text=now_year2 + " "+ now_month2),
                                              MessageAction(label=now_month,
-                                                           text=now_month)
+                                                           text=now_year + " "+ now_month)
                                          ]))
 
             line_bot_api.reply_message(event.reply_token,
                                        confirm_template_message)
-        elif '月' in umsg[0]:
+        elif '年' in umsg[0]:
             # 集計クラスのインスタンス作成
-            agr_wal = AggregateWallet(umsg[0], conn)
+            agr_wal = AggregateWallet(umsg, conn)
             # 集計処理実行
             agr_money = agr_wal.no_assign_year()
+            msg_month = str(umsg[0]) + " " + str(umsg[1])
             # メッセージ作成
-            content = str(umsg[0]) + "分 集計しました！\n\n" + payer.getname(1) + "：" + str(
+            content = msg_month + "分 集計しました！\n\n" + payer.getname(1) + "：" + str(
                 agr_money[0]) + " (差額：" + str(agr_money[2]) + ")\n" + payer.getname(2) + "：" + str(
                     agr_money[1]) + " (差額：" + str(agr_money[3]) + ")"
 
