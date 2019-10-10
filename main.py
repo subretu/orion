@@ -105,11 +105,11 @@ class AggregateWallet():
         # 集計処理実行
         cur.execute(
             "select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "
-            + now_month + " and date_part('year',opstime) = " + now_year + " and payer_id = 1;")
+            + self.now_month + " and date_part('year',opstime) = " + self.now_year + " and payer_id = 1;")
         r1 = cur.fetchone()
         cur.execute(
             "select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "
-            + now_month + " and date_part('year',opstime) = " + now_year + " and payer_id = 2;")
+            + self.now_month + " and date_part('year',opstime) = " + self.now_year + " and payer_id = 2;")
         r2 = cur.fetchone()
         # カーソル切断
         cur.close()
