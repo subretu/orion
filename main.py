@@ -84,7 +84,7 @@ def insert_wallet(umsg, nowtime, user_id, conn, agr_wal):
     cur.execute("BEGIN;insert into wallet (opstime,payer_id,money) values ('" +
                 nowtime + "'," + str(user_id) + "," + str(total) + ");COMMIT;")
     # 集計関数呼び出し
-    agr_money = agr_wal.no_assign_year()
+    agr_money = agr_wal.no_assign_year_insert()
     # カーソル切断
     cur.close()
     # 金額を返す
@@ -98,6 +98,23 @@ class AggregateWallet():
         self.conn = set_conn
         self.now_year = str(datetime.datetime.now().year)
         self.now_month = str(datetime.datetime.now().month)
+
+    def no_assign_year_insert(self):
+        # カーソル作成
+        cur = self.conn.cursor()
+        # 集計処理実行
+        cur.execute(
+            "select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "
+            + now_month + " and date_part('year',opstime) = " + now_year + " and payer_id = 1;")
+        r1 = cur.fetchone()
+        cur.execute(
+            "select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "
+            + now_month + " and date_part('year',opstime) = " + now_year + " and payer_id = 2;")
+        r2 = cur.fetchone()
+        # カーソル切断
+        cur.close()
+        # 金額、差額を返す
+        return r1[0], r2[0], 10000 - r1[0], 10000 - r2[0]
 
     def no_assign_year(self):
         # カーソル作成
