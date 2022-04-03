@@ -15,38 +15,49 @@
 import os
 import sys
 import psycopg2
-from argparse import ArgumentParser
 import datetime
 from dateutil.relativedelta import relativedelta
 from flask import Flask, request, abort
-from linebot import (LineBotApi, WebhookHandler)
-from linebot.exceptions import (InvalidSignatureError)
-from linebot.models import (  # 使用するモデル(イベント, メッセージ, アクションなど)を列挙
-    FollowEvent, UnfollowEvent, MessageEvent, PostbackEvent, TextMessage,
-    TextSendMessage, TemplateSendMessage, ButtonsTemplate, CarouselTemplate,
-    CarouselColumn, PostbackTemplateAction, StickerSendMessage, MessageAction,
-    ConfirmTemplate, PostbackAction)
+from linebot import LineBotApi, WebhookHandler
+from linebot.exceptions import InvalidSignatureError
+from linebot.models import (
+    FollowEvent,
+    UnfollowEvent,
+    MessageEvent,
+    PostbackEvent,
+    TextMessage,
+    TextSendMessage,
+    TemplateSendMessage,
+    ButtonsTemplate,
+    CarouselTemplate,
+    CarouselColumn,
+    PostbackTemplateAction,
+    StickerSendMessage,
+    MessageAction,
+    ConfirmTemplate,
+    PostbackAction,
+)
 
 app = Flask(__name__)
 
 # get channel_secret and channel_access_token from your environment variable
-channel_secret = os.getenv('LINE_CHANNEL_SECRET', None)
-channel_access_token = os.getenv('LINE_CHANNEL_ACCESS_TOKEN', None)
+channel_secret = os.getenv("LINE_CHANNEL_SECRET", None)
+channel_access_token = os.getenv("LINE_CHANNEL_ACCESS_TOKEN", None)
 if channel_secret is None:
-    print('Specify LINE_CHANNEL_SECRET as environment variable.')
+    print("Specify LINE_CHANNEL_SECRET as environment variable.")
     sys.exit(1)
 if channel_access_token is None:
-    print('Specify LINE_CHANNEL_ACCESS_TOKEN as environment variable.')
+    print("Specify LINE_CHANNEL_ACCESS_TOKEN as environment variable.")
     sys.exit(1)
 
 line_bot_api = LineBotApi(channel_access_token)
 handler = WebhookHandler(channel_secret)
 
 
-@app.route("/callback", methods=['POST'])
+@app.route("/callback", methods=["POST"])
 def callback():
     # get X-Line-Signature header value
-    signature = request.headers['X-Line-Signature']
+    signature = request.headers["X-Line-Signature"]
 
     # get request body as text
     body = request.get_data(as_text=True)
@@ -58,19 +69,30 @@ def callback():
     except InvalidSignatureError:
         abort(400)
 
-    return 'OK'
+    return "OK"
 
 
 # DB接続用関数
 def get_connection():
-    user = os.getenv('POSTGRES_USER', None)
-    pwd = os.getenv('POSTGRES_PASS', None)
-    server = os.getenv('POSTGRES_HOST', None)
-    port = os.getenv('POSTGRES_HOST', None)
-    db = os.getenv('POSTGRES_PORT', None)
-    con = psycopg2.connect("host=" + server + " port=" + port + " dbname=" +
-                           db + " user=" + user + " password=" + pwd)
+    user = os.getenv("POSTGRES_USER", None)
+    pwd = os.getenv("POSTGRES_PASS", None)
+    server = os.getenv("POSTGRES_HOST", None)
+    port = os.getenv("POSTGRES_HOST", None)
+    db = os.getenv("POSTGRES_PORT", None)
+    con = psycopg2.connect(
+        "host="
+        + server
+        + " port="
+        + port
+        + " dbname="
+        + db
+        + " user="
+        + user
+        + " password="
+        + pwd
+    )
     return con
+
 
 # 支払額登録関数
 def insert_wallet(umsg, nowtime, user_id, conn, agr_wal):
@@ -78,11 +100,18 @@ def insert_wallet(umsg, nowtime, user_id, conn, agr_wal):
     cur = conn.cursor()
     # 金額合計
     total = 0
-    for n in umsg[0:len(umsg)]:
+    for n in umsg[0 : len(umsg)]:
         total = total + int(n)
     # 登録処理実行
-    cur.execute("BEGIN;insert into wallet (opstime,payer_id,money) values ('" +
-                nowtime + "'," + str(user_id) + "," + str(total) + ");COMMIT;")
+    cur.execute(
+        "BEGIN;insert into wallet (opstime,payer_id,money) values ('"
+        + nowtime
+        + "',"
+        + str(user_id)
+        + ","
+        + str(total)
+        + ");COMMIT;"
+    )
     # 集計関数呼び出し
     agr_money = agr_wal.no_assign_year_insert()
     # カーソル切断
@@ -90,9 +119,9 @@ def insert_wallet(umsg, nowtime, user_id, conn, agr_wal):
     # 金額を返す
     return agr_money
 
-# 集計クラス
-class AggregateWallet():
 
+# 集計クラス
+class AggregateWallet:
     def __init__(self, set_umsg, set_conn):
         self.umsg = set_umsg
         self.conn = set_conn
@@ -105,11 +134,19 @@ class AggregateWallet():
         # 集計処理実行
         cur.execute(
             "select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "
-            + self.now_month + " and date_part('year',opstime) = " + self.now_year + " and payer_id = 1;")
+            + self.now_month
+            + " and date_part('year',opstime) = "
+            + self.now_year
+            + " and payer_id = 1;"
+        )
         r1 = cur.fetchone()
         cur.execute(
             "select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "
-            + self.now_month + " and date_part('year',opstime) = " + self.now_year + " and payer_id = 2;")
+            + self.now_month
+            + " and date_part('year',opstime) = "
+            + self.now_year
+            + " and payer_id = 2;"
+        )
         r2 = cur.fetchone()
         # カーソル切断
         cur.close()
@@ -120,16 +157,24 @@ class AggregateWallet():
         # カーソル作成
         cur = self.conn.cursor()
         # 年、月を削除
-        month = self.umsg[1].replace('月', '')
-        year = self.umsg[0].replace('年', '')
+        month = self.umsg[1].replace("月", "")
+        year = self.umsg[0].replace("年", "")
         # 集計処理実行
         cur.execute(
             "select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "
-            + month + " and date_part('year',opstime) = " + year + " and payer_id = 1;")
+            + month
+            + " and date_part('year',opstime) = "
+            + year
+            + " and payer_id = 1;"
+        )
         r1 = cur.fetchone()
         cur.execute(
             "select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "
-            + month + " and date_part('year',opstime) = " + year + " and payer_id = 2;")
+            + month
+            + " and date_part('year',opstime) = "
+            + year
+            + " and payer_id = 2;"
+        )
         r2 = cur.fetchone()
         # カーソル切断
         cur.close()
@@ -140,24 +185,33 @@ class AggregateWallet():
         # カーソル作成
         cur = self.conn.cursor()
         # 年、月を削除
-        month = self.umsg[2].replace('月', '')
-        year = self.umsg[1].replace('年', '')
+        month = self.umsg[2].replace("月", "")
+        year = self.umsg[1].replace("年", "")
         # 集計処理実行
         cur.execute(
             "select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "
-            + month + " and date_part('year',opstime) = " + year + " and payer_id = 1;")
+            + month
+            + " and date_part('year',opstime) = "
+            + year
+            + " and payer_id = 1;"
+        )
         r1 = cur.fetchone()
         cur.execute(
             "select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "
-            + month + " and date_part('year',opstime) = " + year + " and payer_id = 2;")
+            + month
+            + " and date_part('year',opstime) = "
+            + year
+            + " and payer_id = 2;"
+        )
         r2 = cur.fetchone()
         # カーソル切断
         cur.close()
         # 金額、差額を返す
         return r1[0], r2[0], 10000 - r1[0], 10000 - r2[0]
 
+
 # 支払者クラス
-class StorePayer():
+class StorePayer:
     # クラス変数にて支払者IDを保存
     pname_id = None
 
@@ -178,8 +232,9 @@ class StorePayer():
 def on_postback(event):
     postback_data = event.postback.data.split(":")
     StorePayer.pname_id = postback_data[1]
-    line_bot_api.reply_message(event.reply_token,
-                               TextSendMessage(text=postback_data[0] + 'の支払額はいくらですか？'))
+    line_bot_api.reply_message(
+        event.reply_token, TextSendMessage(text=postback_data[0] + "の支払額はいくらですか？")
+    )
 
 
 @handler.add(MessageEvent, message=TextMessage)
@@ -198,119 +253,182 @@ def message_text(event):
         agr_wal = AggregateWallet(umsg, conn)
 
         # 集計処理
-        if '集計' in umsg[0]:
+        if "集計" in umsg[0]:
 
             # 集計処理実行
             agr_money = agr_wal.assign_year()
             msg_month = str(umsg[1]) + " " + str(umsg[2])
 
             # メッセージ作成
-            content = msg_month + "分 集計しました！\n\n" + payer.getname(1) + "：" + str(
-                agr_money[0]) + " (差額：" + str(agr_money[2]) + ")\n" + payer.getname(2) + "：" + str(
-                    agr_money[1]) + " (差額：" + str(agr_money[3]) + ")"
+            content = (
+                msg_month
+                + "分 集計しました！\n\n"
+                + payer.getname(1)
+                + "："
+                + str(agr_money[0])
+                + " (差額："
+                + str(agr_money[2])
+                + ")\n"
+                + payer.getname(2)
+                + "："
+                + str(agr_money[1])
+                + " (差額："
+                + str(agr_money[3])
+                + ")"
+            )
 
-            line_bot_api.reply_message(event.reply_token,
-                                       TextSendMessage(text=content))
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(text=content))
 
         elif (umsg[0].isnumeric()) and (StorePayer.pname_id is not None):
             # 時間取得StorePayer
-            nowtime = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+            nowtime = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
             # 集計クラスのインスタンス作成
             agr_wal = AggregateWallet(umsg, conn)
             # 支払金額登録処理+集計処理実行
-            agr_money = insert_wallet(
-                umsg, nowtime, StorePayer.pname_id, conn, agr_wal)
-            content = "金額の登録が完了したよ！\n\n【現在までの集計】\n" + '{0:%m}'.format(
-                datetime.datetime.strptime(nowtime, '%Y/%m/%d %H:%M:%S')
-            ) + "月分\n" + payer.getname(1) + "：" + str(agr_money[0]) + " (差額：" + str(
-                agr_money[2]) + ")\n" + payer.getname(2) + "：" + str(agr_money[1]) + " (差額：" + str(
-                    agr_money[3]) + ")"
+            agr_money = insert_wallet(umsg, nowtime, StorePayer.pname_id, conn, agr_wal)
+            content = (
+                "金額の登録が完了したよ！\n\n【現在までの集計】\n"
+                + "{0:%m}".format(
+                    datetime.datetime.strptime(nowtime, "%Y/%m/%d %H:%M:%S")
+                )
+                + "月分\n"
+                + payer.getname(1)
+                + "："
+                + str(agr_money[0])
+                + " (差額："
+                + str(agr_money[2])
+                + ")\n"
+                + payer.getname(2)
+                + "："
+                + str(agr_money[1])
+                + " (差額："
+                + str(agr_money[3])
+                + ")"
+            )
             StorePayer.pname_id = None
-            line_bot_api.reply_message(event.reply_token,
-                                       TextSendMessage(text=content))
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(text=content))
 
         else:
-            line_bot_api.reply_message(event.reply_token, [
-                TextSendMessage(text='ちょっと何言ってるか分からない。'),
-                StickerSendMessage(package_id=1, sticker_id=113)
-            ])
+            line_bot_api.reply_message(
+                event.reply_token,
+                [
+                    TextSendMessage(text="ちょっと何言ってるか分からない。"),
+                    StickerSendMessage(package_id=1, sticker_id=113),
+                ],
+            )
 
     elif len(umsg) >= 1:
 
         # 集計処理
-        if '集計' in umsg[0]:
+        if "集計" in umsg[0]:
             # 月取得
             now_month = str((datetime.date.today()).month) + "月"
             now_year = str((datetime.datetime.now()).year) + "年"
-            now_month2 = str(
-                (datetime.date.today() - relativedelta(months=1)).month) + "月"
-            now_year2 = str(
-                (datetime.date.today() - relativedelta(months=1)).year) + "年"
+            now_month2 = (
+                str((datetime.date.today() - relativedelta(months=1)).month) + "月"
+            )
+            now_year2 = (
+                str((datetime.date.today() - relativedelta(months=1)).year) + "年"
+            )
             confirm_template_message = TemplateSendMessage(
-                alt_text='何月の集計ですか？',
-                template=ConfirmTemplate(text='何月の集計ですか？',
-                                         actions=[
-                                             MessageAction(label=now_month2,
-                                                           text=now_year2 + " "+ now_month2),
-                                             MessageAction(label=now_month,
-                                                           text=now_year + " "+ now_month)
-                                         ]))
+                alt_text="何月の集計ですか？",
+                template=ConfirmTemplate(
+                    text="何月の集計ですか？",
+                    actions=[
+                        MessageAction(
+                            label=now_month2, text=now_year2 + " " + now_month2
+                        ),
+                        MessageAction(label=now_month, text=now_year + " " + now_month),
+                    ],
+                ),
+            )
 
-            line_bot_api.reply_message(event.reply_token,
-                                       confirm_template_message)
-        elif '年' in umsg[0]:
+            line_bot_api.reply_message(event.reply_token, confirm_template_message)
+        elif "年" in umsg[0]:
             # 集計クラスのインスタンス作成
             agr_wal = AggregateWallet(umsg, conn)
             # 集計処理実行
             agr_money = agr_wal.no_assign_year()
             msg_month = str(umsg[0]) + " " + str(umsg[1])
             # メッセージ作成
-            content = msg_month + "分 集計しました！\n\n" + payer.getname(1) + "：" + str(
-                agr_money[0]) + " (差額：" + str(agr_money[2]) + ")\n" + payer.getname(2) + "：" + str(
-                    agr_money[1]) + " (差額：" + str(agr_money[3]) + ")"
+            content = (
+                msg_month
+                + "分 集計しました！\n\n"
+                + payer.getname(1)
+                + "："
+                + str(agr_money[0])
+                + " (差額："
+                + str(agr_money[2])
+                + ")\n"
+                + payer.getname(2)
+                + "："
+                + str(agr_money[1])
+                + " (差額："
+                + str(agr_money[3])
+                + ")"
+            )
 
-            line_bot_api.reply_message(event.reply_token,
-                                       TextSendMessage(text=content))
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(text=content))
 
         elif (umsg[0].isnumeric()) and (StorePayer.pname_id is not None):
             # 時間取得
-            nowtime = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+            nowtime = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
             # 集計クラスのインスタンス作成
             agr_wal = AggregateWallet(umsg[0], conn)
             # 支払金額登録処理+集計処理実行
-            agr_money = insert_wallet(
-                umsg, nowtime, StorePayer.pname_id, conn, agr_wal)
-            content = "金額の登録が完了したよ！\n\n【現在までの集計】\n" + '{0:%m}'.format(
-                datetime.datetime.strptime(nowtime, '%Y/%m/%d %H:%M:%S')
-            ) + "月分\n" + payer.getname(1) + "：" + str(agr_money[0]) + " (差額：" + str(
-                agr_money[2]) + ")\n" + payer.getname(2) + "：" + str(agr_money[1]) + " (差額：" + str(
-                    agr_money[3]) + ")"
+            agr_money = insert_wallet(umsg, nowtime, StorePayer.pname_id, conn, agr_wal)
+            content = (
+                "金額の登録が完了したよ！\n\n【現在までの集計】\n"
+                + "{0:%m}".format(
+                    datetime.datetime.strptime(nowtime, "%Y/%m/%d %H:%M:%S")
+                )
+                + "月分\n"
+                + payer.getname(1)
+                + "："
+                + str(agr_money[0])
+                + " (差額："
+                + str(agr_money[2])
+                + ")\n"
+                + payer.getname(2)
+                + "："
+                + str(agr_money[1])
+                + " (差額："
+                + str(agr_money[3])
+                + ")"
+            )
             StorePayer.pname_id = None
-            line_bot_api.reply_message(event.reply_token,
-                                       TextSendMessage(text=content))
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(text=content))
 
-        elif '起動' in umsg[0]:
-            line_bot_api.reply_message(event.reply_token,
-                                       TextSendMessage(text='生きてます！'))
+        elif "起動" in umsg[0]:
+            line_bot_api.reply_message(
+                event.reply_token, TextSendMessage(text="生きてます！")
+            )
 
-        elif '登録' in umsg[0]:
+        elif "登録" in umsg[0]:
             message_template = TemplateSendMessage(
-                alt_text='支払者は誰ですか？',
+                alt_text="支払者は誰ですか？",
                 template=ConfirmTemplate(
-                    text='支払者は誰ですか？',
+                    text="支払者は誰ですか？",
                     actions=[
-                        PostbackTemplateAction(label=payer.getname(
-                            1), data=payer.getname(1) + ":1"),
-                        PostbackTemplateAction(label=payer.getname(
-                            2), data=payer.getname(2) + ":2")
-                    ]))
+                        PostbackTemplateAction(
+                            label=payer.getname(1), data=payer.getname(1) + ":1"
+                        ),
+                        PostbackTemplateAction(
+                            label=payer.getname(2), data=payer.getname(2) + ":2"
+                        ),
+                    ],
+                ),
+            )
             line_bot_api.reply_message(event.reply_token, message_template)
 
         else:
-            line_bot_api.reply_message(event.reply_token, [
-                TextSendMessage(text='ちょっと何言ってるか分からない。'),
-                StickerSendMessage(package_id=1, sticker_id=113)
-            ])
+            line_bot_api.reply_message(
+                event.reply_token,
+                [
+                    TextSendMessage(text="ちょっと何言ってるか分からない。"),
+                    StickerSendMessage(package_id=1, sticker_id=113),
+                ],
+            )
 
     # DBの切断
     conn.close()
