@@ -14,7 +14,6 @@
 
 import os
 import sys
-import psycopg2
 import datetime
 from dateutil.relativedelta import relativedelta
 from flask import Flask, request, abort
@@ -31,6 +30,7 @@ from linebot.models import (
     MessageAction,
     ConfirmTemplate,
 )
+from db import get_connection
 
 
 app = Flask(__name__)
@@ -67,35 +67,13 @@ def callback():
     return "OK"
 
 
-# DB接続用関数
-def get_connection():
-    user = os.getenv("POSTGRES_USER", None)
-    pwd = os.getenv("POSTGRES_PASS", None)
-    server = os.getenv("POSTGRES_HOST", None)
-    port = os.getenv("POSTGRES_PORT", None)
-    db = os.getenv("POSTGRES_DB", None)
-    con = psycopg2.connect(
-        "host="
-        + server
-        + " port="
-        + str(port)
-        + " dbname="
-        + db
-        + " user="
-        + user
-        + " password="
-        + pwd
-    )
-    return con
-
-
 # 支払額登録関数
 def insert_wallet(umsg, nowtime, user_id, conn, agr_wal):
     # カーソル作成
     cur = conn.cursor()
     # 金額合計
     total = 0
-    for n in umsg[0 : len(umsg)]:
+    for n in umsg[0: len(umsg)]:
         total = total + int(n)
     # 登録処理実行
     cur.execute(
