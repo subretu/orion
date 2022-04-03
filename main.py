@@ -83,7 +83,7 @@ def get_connection():
         "host="
         + server
         + " port="
-        + port
+        + str(port)
         + " dbname="
         + db
         + " user="
