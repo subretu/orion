@@ -116,7 +116,7 @@ def message_text(event):
                 )
             )
             line_bot_api.reply_message(event.reply_token, confirm_template_message)
-        case "年":
+        case x if "年" in x:
             agr_wal = AggregateWallet(umsg, conn)
             # 集計処理実行
             agr_money = agr_wal.no_assign_year()
