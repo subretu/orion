@@ -94,7 +94,7 @@ class AggregateWallet:
 # 支払額登録関数
 def insert_wallet(umsg, nowtime, user_id, conn, agr_wal):
     # カーソル作成
-    cur = conn.cwalletursor()
+    cur = conn.cursor()
     # 金額合計
     total = 0
     for n in umsg[0 : len(umsg)]:
