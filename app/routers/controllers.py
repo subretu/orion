@@ -30,7 +30,7 @@ from linebot.models import (
     MessageAction,
     ConfirmTemplate,
 )
-from app.db import get_connection
+from app.database_connection import get_connection
 from app.models.wallet import AggregateWallet, insert_wallet
 from app.models.payer import StorePayer
 from fastapi import APIRouter
