@@ -92,7 +92,7 @@ def message_text(event):
     match umsg[0]:
         case "集計":
             year_labels = (
-                str((datetime.date.today() - relativedelta(months=1)).month) + "月",
+                str((datetime.date.today() - relativedelta(months=1)).year) + "年",
                 str((datetime.datetime.now()).year) + "年",
             )
             month_labels = (
