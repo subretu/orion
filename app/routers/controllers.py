@@ -128,15 +128,10 @@ def message_text(event):
                 + payer.getname(1)
                 + "："
                 + str(agr_money[0])
-                + " (差額："
-                + str(agr_money[2])
-                + ")\n"
+                + "\n"
                 + payer.getname(2)
                 + "："
                 + str(agr_money[1])
-                + " (差額："
-                + str(agr_money[3])
-                + ")"
             )
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=content))
         case "登録":
@@ -169,15 +164,10 @@ def message_text(event):
                 + payer.getname(1)
                 + "："
                 + str(agr_money[0])
-                + " (差額："
-                + str(agr_money[2])
-                + ")\n"
+                + "\n"
                 + payer.getname(2)
                 + "："
                 + str(agr_money[1])
-                + " (差額："
-                + str(agr_money[3])
-                + ")"
             )
             StorePayer.pname_id = None
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=content))

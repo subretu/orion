@@ -32,7 +32,7 @@ class AggregateWallet:
         # カーソル切断
         cur.close()
         # 金額、差額を返す
-        return r1[0], r2[0], 10000 - r1[0], 10000 - r2[0]
+        return r1[0], r2[0]
 
     def no_assign_year(self):
         # カーソル作成
@@ -60,7 +60,7 @@ class AggregateWallet:
         # カーソル切断
         cur.close()
         # 金額、差額を返す
-        return r1[0], r2[0], 10000 - r1[0], 10000 - r2[0]
+        return r1[0], r2[0]
 
     def assign_year(self):
         # カーソル作成
@@ -88,7 +88,7 @@ class AggregateWallet:
         # カーソル切断
         cur.close()
         # 金額、差額を返す
-        return r1[0], r2[0], 10000 - r1[0], 10000 - r2[0]
+        return r1[0], r2[0]
 
 
 # 支払額登録関数
