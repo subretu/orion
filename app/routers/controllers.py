@@ -30,6 +30,7 @@ from linebot.models import (
     MessageAction,
     ConfirmTemplate,
 )
+from aiolinebot import AioLineBotApi
 from app.database_connection import get_connection
 from app.models.wallet import AggregateWallet, insert_wallet
 from app.models.payer import StorePayer
@@ -48,7 +49,7 @@ if channel_access_token is None:
     print("Specify LINE_CHANNEL_ACCESS_TOKEN as environment variable.")
     sys.exit(1)
 
-line_bot_api = LineBotApi(channel_access_token)
+line_bot_api = AioLineBotApi(channel_access_token)
 handler = WebhookHandler(channel_secret)
 
 
