@@ -72,16 +72,16 @@ async def callback(request: Request):
 
 
 @handler.add(PostbackEvent)
-def on_postback(event):
+async def on_postback(event):
     postback_data = event.postback.data.split(":")
     StorePayer.pname_id = postback_data[1]
-    line_bot_api.reply_message(
+    await line_bot_api.reply_message(
         event.reply_token, TextSendMessage(text=postback_data[0] + "の支払額はいくらですか？")
     )
 
 
 @handler.add(MessageEvent, message=TextMessage)
-def message_text(event):
+async def message_text(event):
 
     # DBコネクション作成
     conn = get_connection()
@@ -116,7 +116,7 @@ def message_text(event):
                     ]
                 )
             )
-            line_bot_api.reply_message(event.reply_token, confirm_template_message)
+            await line_bot_api.reply_message(event.reply_token, confirm_template_message)
         case x if "年" in x:
             agr_wal = AggregateWallet(umsg, conn)
             # 集計処理実行
@@ -134,7 +134,7 @@ def message_text(event):
                 + "："
                 + str(agr_money[1])
             )
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text=content))
+            await line_bot_api.reply_message(event.reply_token, TextSendMessage(text=content))
         case "登録":
             message_template = TemplateSendMessage(
                 alt_text="支払者は誰ですか？",
@@ -150,7 +150,7 @@ def message_text(event):
                     ],
                 ),
             )
-            line_bot_api.reply_message(event.reply_token, message_template)
+            await line_bot_api.reply_message(event.reply_token, message_template)
         case x if(x.isnumeric()) and (StorePayer.pname_id is not None):
             # 時間取得
             nowtime = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
@@ -171,9 +171,9 @@ def message_text(event):
                 + str(agr_money[1])
             )
             StorePayer.pname_id = None
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text=content))
+            await line_bot_api.reply_message(event.reply_token, TextSendMessage(text=content))
         case _:
-            line_bot_api.reply_message(
+            await line_bot_api.reply_message(
                 event.reply_token,
                 [
                     TextSendMessage(text="ちょっと何言ってるか分からない。"),
