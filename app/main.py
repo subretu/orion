@@ -146,10 +146,10 @@ def message_text(event):
                     + str(agr_money[1])
                 )
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=content))
-        case "登録"
+        case "登録":
             actionslist = []
             if mode == 1:
-                actionslist=[
+                actionslist = [
                     PostbackTemplateAction(
                         label=payer.getname(1), data=payer.getname(1) + ":1"
                     ),
@@ -158,7 +158,7 @@ def message_text(event):
                     ),
                 ]
             else:
-                actionslist=[
+                actionslist = [
                     PostbackTemplateAction(
                         label=payer.getname(1), data=payer.getname(1) + ":1"
                     ),
