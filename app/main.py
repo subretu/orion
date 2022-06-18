@@ -152,10 +152,7 @@ def message_text(event):
                 actionslist = [
                     PostbackTemplateAction(
                         label=payer.getname(1), data=payer.getname(1) + ":1"
-                    ),
-                    PostbackTemplateAction(
-                        label=payer.getname(2), data=payer.getname(2) + ":2"
-                    ),
+                    )
                 ]
             else:
                 actionslist = [
