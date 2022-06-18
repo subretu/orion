@@ -3,5 +3,5 @@ aiolinebot
 psycopg2
 python-dateutil
 requests
-fastapi
+flask
 uvicorn
