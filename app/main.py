@@ -181,7 +181,7 @@ def message_text(event):
             agr_wal = AggregateWallet(umsg[0], conn)
             # 支払金額登録処理+集計処理実行
             agr_money = insert_wallet(umsg, nowtime, StorePayer.pname_id, conn, agr_wal)
-            if mode[0 == 1:
+            if mode[0] == 1:
                 content = (
                     "金額の登録が完了したよ！\n\n【現在までの集計】\n"
                     + "{0:%m}".format(datetime.datetime.strptime(nowtime, "%Y/%m/%d %H:%M:%S"))
