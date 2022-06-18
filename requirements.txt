@@ -1,4 +1,4 @@
-line-bot-sdk
+line-bot-sdk==1.6.0
 aiolinebot
 psycopg2
 python-dateutil
