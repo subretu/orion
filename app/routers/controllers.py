@@ -172,12 +172,12 @@ async def message_text(event):
             )
             StorePayer.pname_id = None
             await line_bot_api.reply_message(event.reply_token, TextSendMessage(text=content))
-        case "シングルモード":
-            update_mode(conn, 1)
-            await line_bot_api.reply_message(event.reply_token, TextSendMessage(text="シングルモードに変更します。"))
-        case "シングルモード解除":
-            update_mode(conn, 2)
-            await line_bot_api.reply_message(event.reply_token, TextSendMessage(text="シングルモードを解除します。"))
+        #case "シングルモード":
+        #    update_mode(conn, 1)
+        #    await line_bot_api.reply_message(event.reply_token, TextSendMessage(text="シングルモードに変更します。"))
+        #case "シングルモード解除":
+        #    update_mode(conn, 2)
+        #    await line_bot_api.reply_message(event.reply_token, TextSendMessage(text="シングルモードを解除します。"))
         case _:
             await line_bot_api.reply_message(
                 event.reply_token,
