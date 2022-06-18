@@ -2,9 +2,9 @@ def update_mode(conn, mode):
     cur = conn.cursor()
 
     sql = f"""
-    BEGIN;
+    begin;
     update orion_mode set mode = {mode};
-    COMMIT;
+    commit;
     """
     cur.execute(sql)
 

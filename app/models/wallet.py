@@ -101,13 +101,13 @@ def insert_wallet(umsg, nowtime, user_id, conn, agr_wal):
         total = total + int(n)
     # 登録処理実行
     cur.execute(
-        "BEGIN;insert into wallet (opstime,payer_id,money) values ('"
+        "begin;insert into wallet (opstime,payer_id,money) values ('"
         + nowtime
         + "',"
         + str(user_id)
         + ","
         + str(total)
-        + ");COMMIT;"
+        + ");commit;"
     )
     # 集計関数呼び出し
     agr_money = agr_wal.no_assign_year_insert()
