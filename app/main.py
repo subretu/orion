@@ -189,7 +189,7 @@ def message_text(event):
     # 受信メッセージを分割
     umsg = event.message.text.split()
 
-    mode = get_mode()
+    mode = get_mode(conn)
 
     if mode == 1:
         single = SingleMode()
