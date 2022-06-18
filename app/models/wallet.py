@@ -97,7 +97,7 @@ def insert_wallet(umsg, nowtime, user_id, conn, agr_wal):
     cur = conn.cursor()
     # 金額合計
     total = 0
-    for n in umsg[0 : len(umsg)]:
+    for n in umsg[0: len(umsg)]:
         total = total + int(n)
     # 登録処理実行
     cur.execute(
