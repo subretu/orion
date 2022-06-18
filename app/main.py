@@ -90,8 +90,6 @@ def message_text(event):
     umsg = event.message.text.split()
 
     mode = get_mode(conn)
-    print(mode)
-    print(type(mode))
 
     match umsg[0]:
         case "集計":
@@ -125,7 +123,7 @@ def message_text(event):
             # 集計処理実行
             agr_money = agr_wal.no_assign_year()
             msg_month = str(umsg[0]) + " " + str(umsg[1])
-            if mode == 1:
+            if mode[0] == 1:
                 # メッセージ作成
                 content = (
                     msg_month
@@ -150,7 +148,7 @@ def message_text(event):
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=content))
         case "登録":
             actionslist = []
-            if mode == 1:
+            if mode[0 == 1:
                 actionslist = [
                     PostbackTemplateAction(
                         label=payer.getname(1), data=payer.getname(1) + ":1"
@@ -183,7 +181,7 @@ def message_text(event):
             agr_wal = AggregateWallet(umsg[0], conn)
             # 支払金額登録処理+集計処理実行
             agr_money = insert_wallet(umsg, nowtime, StorePayer.pname_id, conn, agr_wal)
-            if mode == 1:
+            if mode[0 == 1:
                 content = (
                     "金額の登録が完了したよ！\n\n【現在までの集計】\n"
                     + "{0:%m}".format(datetime.datetime.strptime(nowtime, "%Y/%m/%d %H:%M:%S"))
