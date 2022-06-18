@@ -33,6 +33,7 @@ from linebot.models import (
 from app.database_connection import get_connection
 from app.models.wallet import AggregateWallet, insert_wallet
 from app.models.payer import StorePayer
+from app.models.mode import update_mode, get_mode
 
 
 app = Flask(__name__)
@@ -87,6 +88,8 @@ def message_text(event):
     payer = StorePayer(conn)
     # 受信メッセージを分割
     umsg = event.message.text.split()
+
+    mode = get_mode
 
     match umsg[0]:
         case "集計":
@@ -170,6 +173,12 @@ def message_text(event):
             )
             StorePayer.pname_id = None
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=content))
+        case "シングルモード":
+            update_mode(conn, 1)
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(text="シングルモードに変更します。"))
+        case "シングルモード解除":
+            update_mode(conn, 2)
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(text="シングルモードを解除します。"))
         case _:
             line_bot_api.reply_message(
                 event.reply_token,
