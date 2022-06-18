@@ -90,6 +90,8 @@ def message_text(event):
     umsg = event.message.text.split()
 
     mode = get_mode(conn)
+    print(mode)
+    print(type(mode))
 
     match umsg[0]:
         case "集計":
