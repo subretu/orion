@@ -147,30 +147,25 @@ def message_text(event):
                 )
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=content))
         case "登録":
-            actionslist = []
             if mode[0] == 1:
-                actionslist = [
-                    PostbackTemplateAction(
-                        label=payer.getname(1), data=payer.getname(1) + ":1"
-                    )
-                ]
+                StorePayer.pname_id = "1"
+                line_bot_api.reply_message(event.reply_token, TextSendMessage(text="支払額はいくらですか？"))
             else:
-                actionslist = [
-                    PostbackTemplateAction(
-                        label=payer.getname(1), data=payer.getname(1) + ":1"
+                message_template = TemplateSendMessage(
+                    alt_text="支払者は誰ですか？",
+                    template=ConfirmTemplate(
+                        text="支払者は誰ですか？",
+                        actions=[
+                            PostbackTemplateAction(
+                                label=payer.getname(1), data=payer.getname(1) + ":1"
+                            ),
+                            PostbackTemplateAction(
+                                label=payer.getname(2), data=payer.getname(2) + ":2"
+                            ),
+                        ]
                     ),
-                    PostbackTemplateAction(
-                        label=payer.getname(2), data=payer.getname(2) + ":2"
-                    ),
-                ]
-            message_template = TemplateSendMessage(
-                alt_text="支払者は誰ですか？",
-                template=ConfirmTemplate(
-                    text="支払者は誰ですか？",
-                    actions=actionslist
-                ),
-            )
-            line_bot_api.reply_message(event.reply_token, message_template)
+                )
+                line_bot_api.reply_message(event.reply_token, message_template)
         case x if(x.isnumeric()) and (StorePayer.pname_id is not None):
             # 時間取得
             nowtime = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
