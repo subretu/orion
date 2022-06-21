@@ -31,7 +31,7 @@ from linebot.models import (
     ConfirmTemplate,
 )
 from app.database_connection import get_connection
-from app.models.wallet import AggregateWallet, insert_wallet
+from app.models.wallet import AggregateWallet
 from app.models.payer import StorePayer
 from app.models.mode import update_mode, get_mode
 
@@ -84,10 +84,11 @@ def on_postback(event):
 def message_text(event):
     # DBコネクション作成
     conn = get_connection()
-    # 支払者クラスのインスタンス作成＋支払者名取得
-    payer = StorePayer(conn)
     # 受信メッセージを分割
     umsg = event.message.text.split()
+    # インスタンス化
+    wallet = AggregateWallet(umsg, conn)
+    payer = StorePayer(conn)
 
     mode = get_mode(conn)
 
@@ -119,9 +120,8 @@ def message_text(event):
             )
             line_bot_api.reply_message(event.reply_token, confirm_template_message)
         case x if "年" in x:
-            agr_wal = AggregateWallet(umsg, conn)
             # 集計処理実行
-            agr_money = agr_wal.no_assign_year()
+            agr_money = wallet.aggregate_money()
             msg_month = str(umsg[0]) + " " + str(umsg[1])
             if mode[0] == 1:
                 # メッセージ作成
@@ -167,33 +167,29 @@ def message_text(event):
                 )
                 line_bot_api.reply_message(event.reply_token, message_template)
         case x if(x.isnumeric()) and (StorePayer.pname_id is not None):
-            # 時間取得
-            nowtime = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
-            # 集計クラスのインスタンス作成
-            agr_wal = AggregateWallet(umsg[0], conn)
-            # 支払金額登録処理+集計処理実行
-            agr_money = insert_wallet(umsg, nowtime, StorePayer.pname_id, conn, agr_wal)
+            # 支払金額登録処理実行
+            result = wallet.insert_wallet(umsg, StorePayer.pname_id)
             if mode[0] == 1:
                 content = (
                     "金額の登録が完了したよ！\n\n【現在までの集計】\n"
-                    + "{0:%m}".format(datetime.datetime.strptime(nowtime, "%Y/%m/%d %H:%M:%S"))
+                    + str(result[0])
                     + "月分\n"
                     + payer.getname(1)
                     + "："
-                    + str(agr_money[0])
+                    + str(result[1][0])
                 )
             else:
                 content = (
                     "金額の登録が完了したよ！\n\n【現在までの集計】\n"
-                    + "{0:%m}".format(datetime.datetime.strptime(nowtime, "%Y/%m/%d %H:%M:%S"))
+                    + str(result[0])
                     + "月分\n"
                     + payer.getname(1)
                     + "："
-                    + str(agr_money[0])
+                    + str(result[1][0])
                     + "\n"
                     + payer.getname(2)
                     + "："
-                    + str(agr_money[1])
+                    + str(result[1][1])
                 )
             StorePayer.pname_id = None
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=content))
