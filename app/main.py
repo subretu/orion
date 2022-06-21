@@ -31,7 +31,7 @@ from linebot.models import (
     ConfirmTemplate,
 )
 from app.database_connection import get_connection
-from app.models.wallet import AggregateWallet
+from app.models.wallet import Wallet
 from app.models.payer import StorePayer
 from app.models.mode import update_mode, get_mode
 
@@ -87,7 +87,7 @@ def message_text(event):
     # 受信メッセージを分割
     umsg = event.message.text.split()
     # インスタンス化
-    wallet = AggregateWallet(umsg, conn)
+    wallet = Wallet(umsg, conn)
     payer = StorePayer(conn)
 
     mode = get_mode(conn)
