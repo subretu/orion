@@ -213,7 +213,6 @@ def message_text(event):
                     StickerSendMessage(package_id=1, sticker_id=113),
                 ],
             )
-
     # DBの切断
     conn.close()
 
