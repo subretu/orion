@@ -30,7 +30,7 @@ from linebot.models import (
     MessageAction,
     ConfirmTemplate,
 )
-from app.database_connection import get_connection
+from app.connection import get_connection
 from app.models.wallet import Wallet
 from app.models.payer import StorePayer
 from app.models.mode import update_mode, get_mode
