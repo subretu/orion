@@ -53,10 +53,10 @@ line_bot_api = LineBotApi(channel_access_token)
 handler = WebhookHandler(channel_secret)
 
 
-@app.route("/callback", methods=['POST'])
+@app.route("/callback", methods=["POST"])
 def callback():
     # get X-Line-Signature header value
-    signature = request.headers['X-Line-Signature']
+    signature = request.headers["X-Line-Signature"]
 
     # get request body as text
     body = request.get_data(as_text=True)
@@ -68,7 +68,7 @@ def callback():
     except InvalidSignatureError:
         abort(400)
 
-    return 'OK'
+    return "OK"
 
 
 @handler.add(PostbackEvent)
@@ -114,9 +114,9 @@ def message_text(event):
                         MessageAction(
                             label=month_labels[1],
                             text=year_labels[1] + " " + month_labels[1],
-                        )
-                    ]
-                )
+                        ),
+                    ],
+                ),
             )
             line_bot_api.reply_message(event.reply_token, confirm_template_message)
         case x if "年" in x:
@@ -149,7 +149,9 @@ def message_text(event):
         case "登録":
             if mode[0] == 1:
                 StorePayer.pname_id = "1"
-                line_bot_api.reply_message(event.reply_token, TextSendMessage(text="支払額はいくらですか？"))
+                line_bot_api.reply_message(
+                    event.reply_token, TextSendMessage(text="支払額はいくらですか？")
+                )
             else:
                 message_template = TemplateSendMessage(
                     alt_text="支払者は誰ですか？",
@@ -162,11 +164,11 @@ def message_text(event):
                             PostbackTemplateAction(
                                 label=payer.getname(2), data=payer.getname(2) + ":2"
                             ),
-                        ]
+                        ],
                     ),
                 )
                 line_bot_api.reply_message(event.reply_token, message_template)
-        case x if(x.isnumeric()) and (StorePayer.pname_id is not None):
+        case x if (x.isnumeric()) and (StorePayer.pname_id is not None):
             # 支払金額登録処理実行
             result = wallet.insert_wallet(umsg, StorePayer.pname_id)
             if mode[0] == 1:
@@ -195,10 +197,14 @@ def message_text(event):
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=content))
         case "シングルモード":
             update_mode(conn, 1)
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text="シングルモードに変更します。"))
+            line_bot_api.reply_message(
+                event.reply_token, TextSendMessage(text="シングルモードに変更します。")
+            )
         case "シングルモード解除":
             update_mode(conn, 2)
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text="シングルモードを解除します。"))
+            line_bot_api.reply_message(
+                event.reply_token, TextSendMessage(text="シングルモードを解除します。")
+            )
         case _:
             line_bot_api.reply_message(
                 event.reply_token,
