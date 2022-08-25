@@ -77,7 +77,7 @@ def callback():
 @handler.add(PostbackEvent)
 def on_postback(event):
     postback_data = event.postback.data.split(":")
-    payer_id = postback_data[1]
+    payer_id = 1
     line_bot_api.reply_message(
         event.reply_token, TextSendMessage(text=postback_data[0] + "の支払額はいくらですか？")
     )
@@ -151,7 +151,7 @@ def message_text(event):
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=content))
         case "登録":
             if mode[0] == 1:
-                payer_id = "1"
+                payer_id = 1
                 line_bot_api.reply_message(
                     event.reply_token, TextSendMessage(text="支払額はいくらですか？")
                 )
