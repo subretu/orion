@@ -53,7 +53,7 @@ line_bot_api = LineBotApi(channel_access_token)
 handler = WebhookHandler(channel_secret)
 
 # 支払者格納
-payer_id = None
+payer_id = 0
 
 
 @app.route("/callback", methods=["POST"])
