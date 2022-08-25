@@ -52,9 +52,6 @@ if channel_access_token is None:
 line_bot_api = LineBotApi(channel_access_token)
 handler = WebhookHandler(channel_secret)
 
-# 支払者格納
-payer_id = 0
-
 
 @app.route("/callback", methods=["POST"])
 def callback():
@@ -77,7 +74,7 @@ def callback():
 @handler.add(PostbackEvent)
 def on_postback(event):
     postback_data = event.postback.data.split(":")
-    payer_id = 1
+    StorePayer.pname_id = postback_data[1]
     line_bot_api.reply_message(
         event.reply_token, TextSendMessage(text=postback_data[0] + "の支払額はいくらですか？")
     )
@@ -151,7 +148,7 @@ def message_text(event):
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=content))
         case "登録":
             if mode[0] == 1:
-                payer_id = 1
+                StorePayer.pname_id = "1"
                 line_bot_api.reply_message(
                     event.reply_token, TextSendMessage(text="支払額はいくらですか？")
                 )
@@ -171,9 +168,9 @@ def message_text(event):
                     ),
                 )
                 line_bot_api.reply_message(event.reply_token, message_template)
-        case x if (x.isnumeric()) and (payer_id is not None):
+        case x if (x.isnumeric()) and (StorePayer.pname_id is not None):
             # 支払金額登録処理実行
-            result = wallet.insert_wallet(umsg, payer_id)
+            result = wallet.insert_wallet(umsg, StorePayer.pname_id)
             if mode[0] == 1:
                 content = (
                     "金額の登録が完了したよ！\n\n【現在までの集計】\n"
@@ -196,7 +193,7 @@ def message_text(event):
                     + "："
                     + str(result[1][1])
                 )
-            payer_id = None
+            StorePayer.pname_id = None
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=content))
         case "シングルモード":
             update_mode(conn, 1)
