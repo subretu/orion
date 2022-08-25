@@ -1,8 +1,5 @@
 # 支払者クラス
 class StorePayer:
-    # クラス変数にて支払者IDを保存
-    pname_id = None
-
     def __init__(self, set_conn):
         self.conn = set_conn
 
