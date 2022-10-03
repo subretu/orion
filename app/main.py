@@ -86,7 +86,7 @@ def message_text(event):
     conn = get_connection()
     # 受信メッセージを分割
     umsg = event.message.text.split()
-    # インスタンス化
+
     wallet = Wallet(umsg, conn)
     payer = StorePayer(conn)
 
