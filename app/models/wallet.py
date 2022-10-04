@@ -45,8 +45,6 @@ class Wallet:
         sql = f"""
                 select
                     payer_id
-                    ,date_part('year', opstime) as now_year
-                    ,date_part('month', opstime) as now_month
                     ,coalesce(sum(money),0)::integer as total_money
                 from
                     wallet
@@ -65,7 +63,7 @@ class Wallet:
         # カーソル切断
         cur.close()
 
-        return result[0][1], result[1][1]
+        return result
 
     # 支払額登録関数
     def insert_wallet(self, msg, user_id):

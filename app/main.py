@@ -123,28 +123,21 @@ def message_text(event):
             # 集計処理実行
             agr_money = wallet.aggregate_money()
             msg_month = str(umsg[0]) + " " + str(umsg[1])
+
+            msg = []
+            for i in range(2):
+                if agr_money[i][0] == 1 and agr_money[i][1] >= 0:
+                    msg.append(payer.getname(i+1) + "：" + str(agr_money[i][1]))
+                else:
+                    msg.append(payer.getname(i+1) + "：0")
+
             if mode[0] == 1:
                 # メッセージ作成
-                content = (
-                    msg_month
-                    + "分 集計しました！\n\n"
-                    + payer.getname(1)
-                    + "："
-                    + str(agr_money[0])
-                )
+                content = "\n".join([msg_month + "分 集計しました！", msg[0], msg[1]])
             else:
                 # メッセージ作成
-                content = (
-                    msg_month
-                    + "分 集計しました！\n\n"
-                    + payer.getname(1)
-                    + "："
-                    + str(agr_money[0])
-                    + "\n"
-                    + payer.getname(2)
-                    + "："
-                    + str(agr_money[1])
-                )
+                content = "\n".join([msg_month + "分 集計しました！", msg[0], msg[1]])
+
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=content))
         case "登録":
             if mode[0] == 1:
