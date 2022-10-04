@@ -42,26 +42,30 @@ class Wallet:
         month = self.umsg[1].replace("月", "")
         year = self.umsg[0].replace("年", "")
         # 集計処理実行
-        cur.execute(
-            "select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "
-            + month
-            + " and date_part('year',opstime) = "
-            + year
-            + " and payer_id = 1;"
-        )
-        r1 = cur.fetchone()
-        cur.execute(
-            "select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "
-            + month
-            + " and date_part('year',opstime) = "
-            + year
-            + " and payer_id = 2;"
-        )
-        r2 = cur.fetchone()
+        sql = f"""
+                select
+                    payer_id
+                    ,date_part('year', opstime) as now_year
+                    ,date_part('month', opstime) as now_month
+                    ,coalesce(sum(money),0)::integer as total_money
+                from
+                    wallet
+                where
+                    date_part('year', opstime) = {year}
+                    and
+                    date_part('month', opstime)  = {month}
+                group by
+                    payer_id, date_part('month', opstime),date_part('year', opstime)
+                order by
+                    payer_id
+                ;
+        """
+        cur.execute(sql)
+        result = cur.fetchall()
         # カーソル切断
         cur.close()
 
-        return r1[0], r2[0]
+        return result[0][1], result[1][1]
 
     # 支払額登録関数
     def insert_wallet(self, msg, user_id):
