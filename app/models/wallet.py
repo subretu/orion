@@ -60,10 +60,18 @@ class Wallet:
         """
         cur.execute(sql)
         result = cur.fetchall()
+
+        agr_money = [0, 0]
+        for i in result:
+            if result[i][0] == 1 and result[i][1] >= 0:
+                agr_money[0] = result[i][1]
+            elif result[i][0] == 2 and result[i][1] >= 0:
+                agr_money[1] = result[i][1]
+
         # カーソル切断
         cur.close()
 
-        return result
+        return agr_money
 
     # 支払額登録関数
     def insert_wallet(self, msg, user_id):

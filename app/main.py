@@ -125,15 +125,12 @@ def message_text(event):
             msg_month = str(umsg[0]) + " " + str(umsg[1])
 
             msg = []
-            for i in range(2):
-                if agr_money[i][0] == 1 and agr_money[i][1] >= 0:
-                    msg.append(payer.getname(i+1) + "：" + str(agr_money[i][1]))
-                else:
-                    msg.append(payer.getname(i+1) + "：0")
+            for index, item in enumerate(agr_money):
+                msg.append(payer.getname(index+1) + "：" + str(item))
 
             if mode[0] == 1:
                 # メッセージ作成
-                content = "\n".join([msg_month + "分 集計しました！", msg[0], msg[1]])
+                content = "\n".join([msg_month + "分 集計しました！", msg[0]])
             else:
                 # メッセージ作成
                 content = "\n".join([msg_month + "分 集計しました！", msg[0], msg[1]])
