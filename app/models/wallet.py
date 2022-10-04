@@ -62,7 +62,7 @@ class Wallet:
         result = cur.fetchall()
 
         agr_money = [0, 0]
-        for i in result:
+        for i in range(len(result)):
             if result[i][0] == 1 and result[i][1] >= 0:
                 agr_money[0] = result[i][1]
             elif result[i][0] == 2 and result[i][1] >= 0:
