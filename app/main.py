@@ -126,7 +126,7 @@ def message_text(event):
 
             msg = []
             for index, item in enumerate(agr_money):
-                msg.append(payer.getname(index+1) + "：" + str(item))
+                msg.append(payer.getname(index + 1) + "：" + str(item))
 
             if mode[0] == 1:
                 # メッセージ作成
@@ -161,28 +161,26 @@ def message_text(event):
         case x if (x.isnumeric()) and (StorePayer.pname_id is not None):
             # 支払金額登録処理実行
             result = wallet.insert_wallet(umsg, StorePayer.pname_id)
+
+            msg = []
+            for index, item in enumerate((result[1])):
+                msg.append(payer.getname(index + 1) + "：" + str(item))
+
             if mode[0] == 1:
-                content = (
-                    "金額の登録が完了したよ！\n\n【現在までの集計】\n"
-                    + str(result[0])
-                    + "月分\n"
-                    + payer.getname(1)
-                    + "："
-                    + str(result[1][0])
+                # メッセージ作成
+                content = "\n".join(
+                    ["金額の登録が完了したよ！\n\n【現在までの集計】" + msg_month + "分 集計しました！", msg[0]]
                 )
             else:
-                content = (
-                    "金額の登録が完了したよ！\n\n【現在までの集計】\n"
-                    + str(result[0])
-                    + "月分\n"
-                    + payer.getname(1)
-                    + "："
-                    + str(result[1][0])
-                    + "\n"
-                    + payer.getname(2)
-                    + "："
-                    + str(result[1][1])
+                # メッセージ作成
+                content = "\n".join(
+                    [
+                        "金額の登録が完了したよ！\n\n【現在までの集計】" + msg_month + "分 集計しました！",
+                        msg[0],
+                        msg[1],
+                    ]
                 )
+
             StorePayer.pname_id = None
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=content))
         case "シングルモード":

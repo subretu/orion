@@ -14,26 +14,36 @@ class Wallet:
         # カーソル作成
         cur = self.conn.cursor()
         # 集計処理実行
-        cur.execute(
-            "select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "
-            + self.now_month
-            + " and date_part('year',opstime) = "
-            + self.now_year
-            + " and payer_id = 1;"
-        )
-        r1 = cur.fetchone()
-        cur.execute(
-            "select coalesce(sum(money),0)::integer from wallet where date_part('month',opstime) = "
-            + self.now_month
-            + " and date_part('year',opstime) = "
-            + self.now_year
-            + " and payer_id = 2;"
-        )
-        r2 = cur.fetchone()
+        sql = f"""
+                select
+                    payer_id
+                    ,coalesce(sum(money),0)::integer as total_money
+                from
+                    wallet
+                where
+                    date_part('year', opstime) = {self.now_year}
+                    and
+                    date_part('month', opstime)  = {self.now_month}
+                group by
+                    payer_id, date_part('month', opstime),date_part('year', opstime)
+                order by
+                    payer_id
+                ;
+        """
+        cur.execute(sql)
+        result = cur.fetchall()
+
+        agr_money = [0, 0]
+        for i in range(len(result)):
+            if result[i][0] == 1 and result[i][1] >= 0:
+                agr_money[0] = result[i][1]
+            elif result[i][0] == 2 and result[i][1] >= 0:
+                agr_money[1] = result[i][1]
+
         # カーソル切断
         cur.close()
 
-        return r1[0], r2[0]
+        return agr_money
 
     def aggregate_money(self):
         # カーソル作成
