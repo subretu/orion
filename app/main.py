@@ -172,7 +172,7 @@ def message_text(event):
                 # メッセージ作成
                 content = "\n".join(
                     [
-                        "金額の登録が完了したよ！\n\n【現在までの集計】\n" + str(result[0]) + "月分\n",
+                        "金額の登録が完了したよ！\n\n【現在までの集計】\n" + str(result[0]) + "月分",
                         msg[0],
                     ]
                 )
@@ -180,7 +180,7 @@ def message_text(event):
                 # メッセージ作成
                 content = "\n".join(
                     [
-                        "金額の登録が完了したよ！\n\n【現在までの集計】\n" + str(result[0]) + "月分\n",
+                        "金額の登録が完了したよ！\n\n【現在までの集計】\n" + str(result[0]) + "月分",
                         msg[0],
                         msg[1],
                     ]
