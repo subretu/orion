@@ -123,7 +123,7 @@ def message_text(event):
             # 集計処理実行
             agr_money = wallet.aggregate_money()
             msg_month = str(umsg[0]) + " " + str(umsg[1])
-
+            # 支払者＋金額メッセージ作成
             msg = []
             for index, item in enumerate(agr_money):
                 msg.append(payer.getname(index + 1) + "：" + str(item))
@@ -159,9 +159,11 @@ def message_text(event):
                 )
                 line_bot_api.reply_message(event.reply_token, message_template)
         case x if (x.isnumeric()) and (StorePayer.pname_id is not None):
+            # 時間取得
+            nowtime = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
             # 支払金額登録処理実行
             result = wallet.insert_wallet(umsg, StorePayer.pname_id)
-
+            # 支払者＋金額メッセージ作成
             msg = []
             for index, item in enumerate((result[1])):
                 msg.append(payer.getname(index + 1) + "：" + str(item))
@@ -169,13 +171,24 @@ def message_text(event):
             if mode[0] == 1:
                 # メッセージ作成
                 content = "\n".join(
-                    ["金額の登録が完了したよ！\n\n【現在までの集計】" + msg_month + "分 集計しました！", msg[0]]
+                    [
+                        "金額の登録が完了したよ！\n\n【現在までの集計】"
+                        + "{0:%m}".format(
+                            datetime.datetime.strptime(nowtime, "%Y/%m/%d %H:%M:%S")
+                        )
+                        + "分 集計しました！",
+                        msg[0],
+                    ]
                 )
             else:
                 # メッセージ作成
                 content = "\n".join(
                     [
-                        "金額の登録が完了したよ！\n\n【現在までの集計】" + msg_month + "分 集計しました！",
+                        "金額の登録が完了したよ！\n\n【現在までの集計】"
+                        + "{0:%m}".format(
+                            datetime.datetime.strptime(nowtime, "%Y/%m/%d %H:%M:%S")
+                        )
+                        + "分 集計しました！",
                         msg[0],
                         msg[1],
                     ]
