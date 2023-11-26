@@ -73,11 +73,11 @@ class Wallet:
             total = total + int(n)
         # 登録処理実行
         cur.execute(
-            "begin;insert into wallet (opstime, money) values ('"
-            + self.now_timestamp
-            + ","
-            + str(total)
-            + ");commit;"
+            f"""
+            begin;
+            insert into wallet (opstime, money) values ('{self.now_timestamp}', {total});
+            commit;
+            """
         )
         # 集計関数呼び出し
         agr_money = self.aggregate_money_after_insert()
