@@ -61,7 +61,7 @@ class Wallet:
         # カーソル切断
         cur.close()
 
-        return result[0]
+        return result[0] if result is not None else 0
 
     # 支払額登録関数
     def insert_wallet(self, msg):
