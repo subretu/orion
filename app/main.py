@@ -25,7 +25,6 @@ from linebot.models import (
     TextMessage,
     TextSendMessage,
     TemplateSendMessage,
-    PostbackTemplateAction,
     StickerSendMessage,
     MessageAction,
     ConfirmTemplate,
@@ -74,7 +73,6 @@ def callback():
 @handler.add(PostbackEvent)
 def on_postback(event):
     postback_data = event.postback.data.split(":")
-    StorePayer.pname_id = postback_data[1]
     line_bot_api.reply_message(
         event.reply_token, TextSendMessage(text=postback_data[0] + "の支払額はいくらですか？")
     )
@@ -89,8 +87,6 @@ def message_text(event):
 
     wallet = Wallet(umsg, conn)
     payer = StorePayer(conn)
-
-    mode = get_mode(conn)
 
     match umsg[0]:
         case "集計":
@@ -123,81 +119,29 @@ def message_text(event):
             # 集計処理実行
             agr_money = wallet.aggregate_money()
             msg_month = str(umsg[0]) + " " + str(umsg[1])
-            # 支払者＋金額メッセージ作成
-            msg = []
-            for index, item in enumerate(agr_money):
-                msg.append(payer.getname(index + 1) + "：" + str(item))
 
-            if mode[0] == 1:
-                # メッセージ作成
-                content = "\n".join([msg_month + "分 集計しました！", msg[0]])
-            else:
-                # メッセージ作成
-                content = "\n".join([msg_month + "分 集計しました！", msg[0], msg[1]])
+            # メッセージ作成
+            content = "\n".join([msg_month + "分 集計しました！",str(agr_money)])
 
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=content))
         case "登録":
-            if mode[0] == 1:
-                StorePayer.pname_id = "1"
-                line_bot_api.reply_message(
-                    event.reply_token, TextSendMessage(text="支払額はいくらですか？")
-                )
-            else:
-                message_template = TemplateSendMessage(
-                    alt_text="支払者は誰ですか？",
-                    template=ConfirmTemplate(
-                        text="支払者は誰ですか？",
-                        actions=[
-                            PostbackTemplateAction(
-                                label=payer.getname(1), data=payer.getname(1) + ":1"
-                            ),
-                            PostbackTemplateAction(
-                                label=payer.getname(2), data=payer.getname(2) + ":2"
-                            ),
-                        ],
-                    ),
-                )
-                line_bot_api.reply_message(event.reply_token, message_template)
-        case x if (x.isnumeric()) and (StorePayer.pname_id is not None):
+            line_bot_api.reply_message(
+                event.reply_token, TextSendMessage(text="支払額はいくらですか？")
+            )
+        case x if (x.isnumeric()):
             # 時間取得
             nowtime = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
             # 支払金額登録処理実行
-            result = wallet.insert_wallet(umsg, StorePayer.pname_id)
-            # 支払者＋金額メッセージ作成
-            msg = []
-            for index, item in enumerate((result[1])):
-                msg.append(payer.getname(index + 1) + "：" + str(item))
+            result = wallet.insert_wallet(umsg)
+            # メッセージ作成
+            content = "\n".join(
+                [
+                    "金額の登録が完了したよ！\n\n【現在までの集計】\n" + str(result[0]) + "月分",
+                    str(result),
+                ]
+            )
 
-            if mode[0] == 1:
-                # メッセージ作成
-                content = "\n".join(
-                    [
-                        "金額の登録が完了したよ！\n\n【現在までの集計】\n" + str(result[0]) + "月分",
-                        msg[0],
-                    ]
-                )
-            else:
-                # メッセージ作成
-                content = "\n".join(
-                    [
-                        "金額の登録が完了したよ！\n\n【現在までの集計】\n" + str(result[0]) + "月分",
-                        msg[0],
-                        msg[1],
-                    ]
-                )
-
-            StorePayer.pname_id = None
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=content))
-        case "シングルモード":
-            update_mode(conn, 1)
-            line_bot_api.reply_message(
-                event.reply_token, TextSendMessage(text="シングルモードに変更します。")
-            )
-        case "シングルモード解除":
-            update_mode(conn, 2)
-            line_bot_api.reply_message(
-                event.reply_token, TextSendMessage(text="シングルモードを解除します。")
-            )
         case _:
             line_bot_api.reply_message(
                 event.reply_token,

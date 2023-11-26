@@ -16,8 +16,7 @@ class Wallet:
         # 集計処理実行
         sql = f"""
                 select
-                    payer_id
-                    ,coalesce(sum(money),0)::integer as total_money
+                    coalesce(sum(money),0)::integer as total_money
                 from
                     wallet
                 where
@@ -25,25 +24,16 @@ class Wallet:
                     and
                     date_part('month', opstime)  = {self.now_month}
                 group by
-                    payer_id, date_part('month', opstime),date_part('year', opstime)
-                order by
-                    payer_id
+                    date_part('month', opstime),date_part('year', opstime)
                 ;
         """
         cur.execute(sql)
-        result = cur.fetchall()
-
-        agr_money = [0, 0]
-        for i in range(len(result)):
-            if result[i][0] == 1 and result[i][1] >= 0:
-                agr_money[0] = result[i][1]
-            elif result[i][0] == 2 and result[i][1] >= 0:
-                agr_money[1] = result[i][1]
+        result = cur.fetchone()
 
         # カーソル切断
         cur.close()
 
-        return agr_money
+        return result[0]
 
     def aggregate_money(self):
         # カーソル作成
@@ -54,8 +44,7 @@ class Wallet:
         # 集計処理実行
         sql = f"""
                 select
-                    payer_id
-                    ,coalesce(sum(money),0)::integer as total_money
+                    coalesce(sum(money),0)::integer as total_money
                 from
                     wallet
                 where
@@ -63,25 +52,16 @@ class Wallet:
                     and
                     date_part('month', opstime)  = {month}
                 group by
-                    payer_id, date_part('month', opstime),date_part('year', opstime)
-                order by
-                    payer_id
+                    date_part('month', opstime),date_part('year', opstime)
                 ;
         """
         cur.execute(sql)
-        result = cur.fetchall()
-
-        agr_money = [0, 0]
-        for i in range(len(result)):
-            if result[i][0] == 1 and result[i][1] >= 0:
-                agr_money[0] = result[i][1]
-            elif result[i][0] == 2 and result[i][1] >= 0:
-                agr_money[1] = result[i][1]
+        result = cur.fetchone()
 
         # カーソル切断
         cur.close()
 
-        return agr_money
+        return result[0]
 
     # 支払額登録関数
     def insert_wallet(self, msg, user_id):
@@ -93,10 +73,8 @@ class Wallet:
             total = total + int(n)
         # 登録処理実行
         cur.execute(
-            "begin;insert into wallet (opstime,payer_id,money) values ('"
+            "begin;insert into wallet (opstime, money) values ('"
             + self.now_timestamp
-            + "',"
-            + str(user_id)
             + ","
             + str(total)
             + ");commit;"
