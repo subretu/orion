@@ -29,9 +29,8 @@ from linebot.models import (
     MessageAction,
     ConfirmTemplate,
 )
-from app.connection import get_connection
+from app.utils.database import get_connection
 from app.models.wallet import Wallet
-from app.models.payer import StorePayer
 
 
 app = Flask(__name__)
@@ -85,7 +84,6 @@ def message_text(event):
     umsg = event.message.text.split()
 
     wallet = Wallet(umsg, conn)
-    payer = StorePayer(conn)
 
     match umsg[0]:
         case "集計":
@@ -120,7 +118,7 @@ def message_text(event):
             msg_month = str(umsg[0]) + " " + str(umsg[1])
 
             # メッセージ作成
-            content = "\n".join([msg_month + "分 集計しました！",str(agr_money)])
+            content = "\n".join([msg_month + "分 集計しました！", "合計：" + str(agr_money)])
 
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=content))
         case "登録":
@@ -133,11 +131,8 @@ def message_text(event):
             # 支払金額登録処理実行
             result = wallet.insert_wallet(umsg)
             # メッセージ作成
-            content = "\n".join(
-                [
-                    "金額の登録が完了したよ！\n\n【現在までの集計】\n" + str(result[0]) + "月分",
-                    str(result),
-                ]
+            content = (
+                "金額の登録が完了しました！\n\n【現在までの集計】\n" + str(result[0]) + "月分：" + result[1]
             )
 
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=content))

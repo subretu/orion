@@ -71,17 +71,20 @@ class Wallet:
         total = 0
         for n in msg[0 : len(msg)]:
             total = total + int(n)
+
         # 登録処理実行
-        cur.execute(
-            f"""
+        sql = f"""
             begin;
             insert into wallet (opstime, money) values ('{self.now_timestamp}', {total});
             commit;
-            """
-        )
+        """
+        cur.execute(sql)
+
         # 集計関数呼び出し
         agr_money = self.aggregate_money_after_insert()
+
         # カーソル切断
         cur.close()
+
         # 金額を返す
         return self.now_month, agr_money
