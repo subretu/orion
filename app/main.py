@@ -32,7 +32,6 @@ from linebot.models import (
 from app.connection import get_connection
 from app.models.wallet import Wallet
 from app.models.payer import StorePayer
-from app.models.mode import update_mode, get_mode
 
 
 app = Flask(__name__)
