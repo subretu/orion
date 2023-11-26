@@ -64,7 +64,7 @@ class Wallet:
         return result[0]
 
     # 支払額登録関数
-    def insert_wallet(self, msg, user_id):
+    def insert_wallet(self, msg):
         # カーソル作成
         cur = self.conn.cursor()
         # 金額合計
