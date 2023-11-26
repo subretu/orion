@@ -126,13 +126,11 @@ def message_text(event):
                 event.reply_token, TextSendMessage(text="支払額はいくらですか？")
             )
         case x if (x.isnumeric()):
-            # 時間取得
-            nowtime = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
             # 支払金額登録処理実行
             result = wallet.insert_wallet(umsg)
             # メッセージ作成
             content = (
-                "金額の登録が完了しました！\n\n【現在までの集計】\n" + str(result[0]) + "月分：" + result[1]
+                "金額の登録が完了しました！\n\n【現在までの集計】\n" + str(result[0]) + "月分：" + str(result[1])
             )
 
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=content))
