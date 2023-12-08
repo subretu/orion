@@ -31,6 +31,7 @@ from linebot.models import (
 )
 from app.utils.database import get_connection
 from app.models.wallet import Wallet
+from app.models import backup
 
 
 app = Flask(__name__)
@@ -134,6 +135,19 @@ def message_text(event):
             )
 
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=content))
+        case "バックアップ":
+            notion_api_url = os.getenv("NOTION_API_URL", None)
+            notion_api_key = os.getenv("NOTION_API_KEY", None)
+            notion_database_id = os.getenv("NOTION_DATABASE_ID", None)
+
+            if backup.backup_to_notion(
+                notion_api_url, notion_api_key, notion_database_id, conn
+            ):
+                message = " バックアップが成功しました。"
+            else:
+                message = " バックアップが失敗しました。"
+
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(text=message))
         case _:
             line_bot_api.reply_message(
                 event.reply_token,
