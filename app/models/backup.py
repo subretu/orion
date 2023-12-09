@@ -34,25 +34,24 @@ def backup_to_notion(notion_api_url, notion_api_key, notion_database_id, conn):
 def calculate_total_amount(conn):
     total_amount_text = ""
 
-    with conn:
-        with conn.cursor() as cursor:
-            sql = """
-            select
-                to_char(opstime, 'yyyy-mm') as year_month
-                ,sum(money) as total_amount
-            from
-                wallet
-            group by
-                year_month
-            order by
-                year_month
-            ;
-            """
-            cursor.execute(sql)
-            result = cursor.fetchall()
+    with conn.cursor() as cursor:
+        sql = """
+        select
+            to_char(opstime, 'yyyy-mm') as year_month
+            ,sum(money) as total_amount
+        from
+            wallet
+        group by
+            year_month
+        order by
+            year_month
+        ;
+        """
+        cursor.execute(sql)
+        result = cursor.fetchall()
 
-        for data in result:
-            total_amount_text = "\n".join(f"{data[0]} {data[1]}" for data in result)
+    for data in result:
+        total_amount_text = "\n".join(f"{data[0]} {data[1]}" for data in result)
 
     conn.close()
 
