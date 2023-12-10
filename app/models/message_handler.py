@@ -3,7 +3,6 @@ import datetime
 from dateutil.relativedelta import relativedelta
 from linebot.models import (
     MessageEvent,
-    PostbackEvent,
     TextMessage,
     TextSendMessage,
     TemplateSendMessage,
