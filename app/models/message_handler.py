@@ -17,14 +17,6 @@ from app.models import backup
 from app.models.line_bot import line_bot_api, handler
 
 
-@handler.add(PostbackEvent)
-def on_postback(event):
-    postback_data = event.postback.data.split(":")
-    line_bot_api.reply_message(
-        event.reply_token, TextSendMessage(text=postback_data[0] + "の支払額はいくらですか？")
-    )
-
-
 @handler.add(MessageEvent, message=TextMessage)
 def message_text(event):
     # DBコネクション作成
