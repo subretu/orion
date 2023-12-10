@@ -16,7 +16,7 @@ import os
 from flask import Flask, request, abort
 from linebot.exceptions import InvalidSignatureError
 from app.models.line_bot import handler
-from app.models.message_handler import on_postback, message_text
+from app.models.message_handler import message_text
 
 
 app = Flask(__name__)
