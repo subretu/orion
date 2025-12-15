@@ -1,4 +1,4 @@
-line-bot-sdk==3.5.1
+line-bot-sdk==3.10.2
 psycopg2
 python-dateutil
 requests
