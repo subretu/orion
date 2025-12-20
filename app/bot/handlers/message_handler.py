@@ -11,9 +11,9 @@ from linebot.models import (
     ConfirmTemplate,
 )
 from app.utils.database import get_connection
-from app.models.wallet import Wallet
 from app.services import backup
 from app.bot.line_bot import line_bot_api, handler
+from app.services.transaction_service import TransactionService
 
 
 @handler.add(MessageEvent, message=TextMessage)
@@ -23,7 +23,7 @@ def message_text(event):
     # 受信メッセージを分割
     umsg = event.message.text.split()
 
-    wallet = Wallet(umsg, conn)
+    ts = TransactionService(conn, umsg)
 
     match umsg[0]:
         case "集計":
@@ -54,7 +54,7 @@ def message_text(event):
             line_bot_api.reply_message(event.reply_token, confirm_template_message)
         case x if "年" in x:
             # 集計処理実行
-            agr_money = wallet.aggregate_money()
+            agr_money = ts.aggregate_month(umsg[0:2])
             msg_month = str(umsg[0]) + " " + str(umsg[1])
 
             # メッセージ作成
@@ -69,7 +69,7 @@ def message_text(event):
             )
         case x if x.isnumeric():
             # 支払金額登録処理実行
-            result = wallet.insert_wallet(umsg)
+            result = ts.register_payment(umsg)
             # メッセージ作成
             content = (
                 "金額の登録が完了しました！\n\n【現在までの集計】\n"
