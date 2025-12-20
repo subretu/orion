@@ -16,11 +16,11 @@ class TransactionService:
         month = int(parts[1].replace("月", ""))
         return year, month
 
-    def aggregate_money(self):
+    def aggregate_money(self, parts: List[str]) -> int:
         with self.conn.cursor() as cursor:
             # 年、月を削除
-            month = self.umsg[1].replace("月", "")
-            year = self.umsg[0].replace("年", "")
+            year, month = self._parse_year_month(parts)
+
             # 集計処理実行
             sql = f"""
                     select
