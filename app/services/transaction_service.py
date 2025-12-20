@@ -31,8 +31,6 @@ class TransactionService:
                         date_part('year', opstime) = {year}
                         and
                         date_part('month', opstime)  = {month}
-                    group by
-                        date_part('month', opstime),date_part('year', opstime)
                     ;
             """
             cursor.execute(sql)

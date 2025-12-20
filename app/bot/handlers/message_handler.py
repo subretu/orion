@@ -54,7 +54,7 @@ def message_text(event):
             line_bot_api.reply_message(event.reply_token, confirm_template_message)
         case x if "年" in x:
             # 集計処理実行
-            agr_money = ts.aggregate_month(umsg[0:2])
+            agr_money = ts.aggregate_money(umsg[0:2])
             msg_month = str(umsg[0]) + " " + str(umsg[1])
 
             # メッセージ作成
