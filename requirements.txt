@@ -1,5 +1,5 @@
 line-bot-sdk==3.11.0
-psycopg2
+psycopg2-binary
 python-dateutil
 requests
 flask
