@@ -37,10 +37,10 @@ def calculate_total_amount(conn):
     with conn.cursor() as cursor:
         sql = """
         select
-            to_char(opstime, 'yyyy-mm') as year_month
-            ,sum(money) as total_amount
+            to_char(occurred_at, 'yyyy-mm') as year_month
+            ,sum(amount) as total_amount
         from
-            wallet
+            transactions
         group by
             year_month
         order by

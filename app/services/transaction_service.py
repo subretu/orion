@@ -24,13 +24,13 @@ class TransactionService:
             # 集計処理実行
             sql = f"""
                     select
-                        coalesce(sum(money),0)::integer as total_money
+                        coalesce(sum(amount),0)::integer as total_amount
                     from
-                        wallet
+                        transactions
                     where
-                        date_part('year', opstime) = {year}
+                        date_part('year', occurred_at) = {year}
                         and
-                        date_part('month', opstime)  = {month}
+                        date_part('month', occurred_at)  = {month}
                     ;
             """
             cursor.execute(sql)
@@ -43,7 +43,7 @@ class TransactionService:
         with self.conn.cursor() as cursor:
             sql = f"""
                 begin;
-                insert into wallet (opstime, money) values ('{self.now_timestamp}', {total});
+                insert into transactions (occurred_at, amount) values ('{self.now_timestamp}', {total});
                 commit;
             """
             cursor.execute(sql)
@@ -51,13 +51,13 @@ class TransactionService:
         with self.conn.cursor() as cursor:
             sql = f"""
                     select
-                        coalesce(sum(money),0)::integer as total_money
+                        coalesce(sum(amount),0)::integer as total_amount
                     from
-                        wallet
+                        transactions
                     where
-                        date_part('year', opstime) = {self.now_year}
+                        date_part('year', occurred_at) = {self.now_year}
                         and
-                        date_part('month', opstime)  = {self.now_month}
+                        date_part('month', occurred_at)  = {self.now_month}
                     ;
             """
             cursor.execute(sql)
