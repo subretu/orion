@@ -16,7 +16,7 @@ class TransactionService:
         month = int(parts[1].replace("月", ""))
         return year, month
 
-    def aggregate_money(self, parts: List[str]) -> int:
+    def get_monthly_total(self, parts: List[str]) -> int:
         with self.conn.cursor() as cursor:
             # 年、月を削除
             year, month = self._parse_year_month(parts)
