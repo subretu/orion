@@ -60,7 +60,7 @@ class TransactionService:
                         date_part('month', occurred_at)  = %s
                     ;
             """
-            cursor.execute(sql)
+            cursor.execute(sql, (self.now_year, self.now_month))
             result = cursor.fetchone()
 
         return now.month, (result[0] if result is not None else 0)
