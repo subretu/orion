@@ -22,18 +22,18 @@ class TransactionService:
             year, month = self._parse_year_month(parts)
 
             # 集計処理実行
-            sql = f"""
+            sql = """
                     select
                         coalesce(sum(amount),0)::integer as total_amount
                     from
                         transactions
                     where
-                        date_part('year', occurred_at) = {year}
+                        date_part('year', occurred_at) = %s
                         and
-                        date_part('month', occurred_at)  = {month}
+                        date_part('month', occurred_at)  = %s
                     ;
             """
-            cursor.execute(sql)
+            cursor.execute(sql, (year, month))
             result = cursor.fetchone()
         return result[0] if result is not None else 0
 
@@ -41,23 +41,23 @@ class TransactionService:
         total = sum(int(t) for t in tokens if t.isnumeric())
         now = datetime.datetime.now()
         with self.conn.cursor() as cursor:
-            sql = f"""
+            sql = """
                 begin;
-                insert into transactions (occurred_at, amount) values ('{self.now_timestamp}', {total});
+                insert into transactions (occurred_at, amount) values (%s, %s);
                 commit;
             """
-            cursor.execute(sql)
+            cursor.execute(sql, (now.strftime("%Y/%m/%d %H:%M:%S"), total))
 
         with self.conn.cursor() as cursor:
-            sql = f"""
+            sql = """
                     select
                         coalesce(sum(amount),0)::integer as total_amount
                     from
                         transactions
                     where
-                        date_part('year', occurred_at) = {self.now_year}
+                        date_part('year', occurred_at) = %s
                         and
-                        date_part('month', occurred_at)  = {self.now_month}
+                        date_part('month', occurred_at)  = %s
                     ;
             """
             cursor.execute(sql)
