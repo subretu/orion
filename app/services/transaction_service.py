@@ -3,9 +3,8 @@ from typing import List, Tuple
 
 
 class TransactionService:
-    def __init__(self, conn, umsg):
+    def __init__(self, conn):
         self.conn = conn
-        self.umsg = umsg
         self.now_year = str(datetime.datetime.now().year)
         self.now_month = str(datetime.datetime.now().month)
         self.now_timestamp = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")

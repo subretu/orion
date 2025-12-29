@@ -53,7 +53,7 @@ def message_text(event):
                 line_bot_api.reply_message(event.reply_token, confirm_template_message)
             case x if "年" in x:
                 # 集計処理実行
-                ts = TransactionService(conn, umsg)
+                ts = TransactionService(conn)
 
                 agr_money = ts.get_monthly_total(umsg[0:2])
                 msg_month = str(umsg[0]) + " " + str(umsg[1])
@@ -72,7 +72,7 @@ def message_text(event):
                 )
             case x if x.isnumeric():
                 # 支払金額登録処理実行
-                ts = TransactionService(conn, umsg)
+                ts = TransactionService(conn)
 
                 result = ts.register_payment(umsg)
                 # メッセージ作成
