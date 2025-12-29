@@ -72,6 +72,8 @@ def message_text(event):
                 )
             case x if x.isnumeric():
                 # 支払金額登録処理実行
+                ts = TransactionService(conn, umsg)
+
                 result = ts.register_payment(umsg)
                 # メッセージ作成
                 content = (
