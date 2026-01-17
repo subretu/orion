@@ -74,7 +74,9 @@ def message_text(event):
                 # 支払金額登録処理実行
                 ts = TransactionService(conn)
 
-                result = ts.register_payment(umsg)
+                user_id = event.source.user_id
+
+                result = ts.register_payment(user_id, umsg)
                 # メッセージ作成
                 content = (
                     "金額の登録が完了しました！\n\n【現在までの集計】\n"

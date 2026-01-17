@@ -36,16 +36,16 @@ class TransactionService:
             result = cursor.fetchone()
         return result[0] if result is not None else 0
 
-    def register_payment(self, tokens: List[str]) -> Tuple[int, int]:
+    def register_payment(self, user_id: str, tokens: List[str]) -> Tuple[int, int]:
         total = sum(int(t) for t in tokens if t.isnumeric())
         now = datetime.datetime.now()
         with self.conn.cursor() as cursor:
             sql = """
                 begin;
-                insert into transactions (occurred_at, amount) values (%s, %s);
+                insert into transactions (user_id, occurred_at, amount) values (%s, %s, %s);
                 commit;
             """
-            cursor.execute(sql, (now.strftime("%Y/%m/%d %H:%M:%S"), total))
+            cursor.execute(sql, (user_id, now.strftime("%Y/%m/%d %H:%M:%S"), total))
 
         with self.conn.cursor() as cursor:
             sql = """
